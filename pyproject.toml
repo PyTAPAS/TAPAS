@@ -9,7 +9,7 @@ version         = "1.0.1"
 description     = "Transient Absorption Processing & Analysis Software"
 readme          = "README.md"
 requires-python = ">=3.11, <3.12"
-license         = {file = "LICENSE.txt"}
+license         = {file = "LICENSE"}
 authors         = [{name = "Philipp Frech"}]
 classifiers = [
   "Programming Language :: Python :: 3.11",
@@ -43,7 +43,7 @@ bundle = ["pyinstaller>=6.13"]
 tapas = "TAPAS.app:run"
 
 [tool.setuptools]
-license-files = ["LICENSE.txt", "THIRD-PARTY_LICENSES.txt"]
+license-files = ["LICENSE", "THIRD-PARTY_LICENSES.txt"]
 
 
 [tool.setuptools.package-data]
