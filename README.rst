@@ -1,4 +1,4 @@
-.. figure:: /_static/splash.png
+.. figure:: docs/_static/splash.png
    :alt: Project Icon
    :align: center
    :width: 200px
