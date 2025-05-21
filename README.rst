@@ -22,8 +22,31 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
+.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-4d88ff.svg
+   :alt: Code of Conduct
+   :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
+
 ========
 What is TAPAS?
 ========
+
+
+========
+Documentation
+========
+
+========
+License
+========
+Copyright 2025 Philipp Frech
+This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
 
