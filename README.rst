@@ -38,6 +38,9 @@ What is TAPAS?
 ========
 Documentation
 ========
+A detailed documentation can be found
+`here <https://tapas-docs.readthedocs.io/en/latest/>`_.
+
 
 ========
 License
