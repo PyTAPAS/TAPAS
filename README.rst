@@ -1,11 +1,7 @@
-.. raw:: html
-   <p align="center">
-     <img
-       src="https://github.com/PyTAPAS/TAPAS/blob/main/docs/_static/splash.png"
-       alt="Project Icon"
-       width="250px"
-     />
-   </p>
+.. figure:: docs/_static/splash.png
+   :alt: Project Icon
+   :align: center
+   :width: 200px
 
 ========
 TAPAS
