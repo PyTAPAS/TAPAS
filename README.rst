@@ -1,3 +1,19 @@
+.. raw:: html
+   <p align="center">
+     <img
+       src="https://github.com/PyTAPAS/TAPAS/blob/main/docs/_static/splash.png"
+       alt="Project Icon"
+       width="250px"
+     />
+   </p>
+
+========
+TAPAS
+========
+
+**Transient Absorption Processing & Analysis Software**
+
+
 .. image:: https://readthedocs.org/projects/tapas-docs/badge/?version=latest
    :target: https://tapas-docs.readthedocs.io/en/latest/
    :alt: Documentation Status
@@ -6,7 +22,12 @@
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/LICENSE
    :alt: License (GPLv3)
 
+.. image:: https://img.shields.io/github/last-commit/PyTAPAS/TAPAS.svg
+   :target: https://github.com/PyTAPAS/TAPAS/commits/main
+   :alt: Last Commit
 
-============================================================
-TAPAS: Transient Absorption Processing & Analysis Software
-============================================================
+========
+What is TAPAS?
+========
+
+
