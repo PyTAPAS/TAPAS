@@ -1,14 +1,14 @@
-.. image:: https://github.com/PyTAPAS/TAPAS/blob/upload1/src/TAPAS/assets/splash.png
+.. figure:: /_static/splash.png
    :alt: Project Icon
    :align: center
-   :width: 250px
+   :width: 200px
 
 ========
 TAPAS
 ========
 
-Transient Absorption Processing & Analysis Software
-====================================================
+**Transient Absorption Processing & Analysis Software**
+
 
 .. image:: https://readthedocs.org/projects/tapas-docs/badge/?version=latest
    :target: https://tapas-docs.readthedocs.io/en/latest/
@@ -23,5 +23,7 @@ Transient Absorption Processing & Analysis Software
    :alt: Last Commit
 
 
+What is TAPAS?
+------------------------
 
 
