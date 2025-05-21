@@ -1,7 +1,11 @@
-.. figure:: docs/_static/splash.png
-   :alt: Project Icon
-   :align: center
-   :width: 200px
+.. raw:: html
+   <p align="center">
+     <img
+       src="https://github.com/PyTAPAS/TAPAS/blob/upload1/docs/_static/splash.png"
+       alt="Project Icon"
+       width="250px"
+     />
+   </p>
 
 ========
 TAPAS
@@ -22,8 +26,8 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
-
+========
 What is TAPAS?
-------------------------
+========
 
 
