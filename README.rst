@@ -26,6 +26,10 @@ TAPAS
    :alt: Code of Conduct
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
 
+.. image:: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml/badge.svg
+   :target: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml
+   :alt: CodeQL Analysis Status
+
 ========
 What is TAPAS?
 ========
