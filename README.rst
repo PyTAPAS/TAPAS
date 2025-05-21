@@ -34,9 +34,8 @@ What is TAPAS?
 ========
 Documentation
 ========
-A detailed documentation can be found here__.
-
-__https://tapas-docs.readthedocs.io/en/latest/
+A detailed documentation can be found
+`here <https://tapas-docs.readthedocs.io/en/latest/>`_.
 
 
 ========
