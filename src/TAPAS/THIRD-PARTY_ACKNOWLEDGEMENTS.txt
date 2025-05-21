@@ -1,0 +1,125 @@
+"Standing on the shoulders of giants"
+
+This project is inspired by many other software solutions and incorporates various third-party packages, design elements and artwork. 
+We wish to express our gratitude to the creators and developers of these projects for their work and for inspiring our own design.
+
+
+--------------------------------------------------------
+Inspiration
+--------------------------------------------------------
+The free open-source software programm Glotaran (https://glotaran.org/) developed by Joris Snellenburg and coworkers is an excellent example of interactivity as well as powerfull and flexible calculations which influenced our approach to building an intuitive user experience.
+Further the modular Python package KiMoPack (https://github.com/erdzeichen/KiMoPack) developed by Jens Uhlig under the GPL-3.0 license provides valuable insights into a thoughtful and streamlined workflow design inspiring our own design and implementations.
+
+
+--------------------------------------------------------
+Python Packages
+--------------------------------------------------------
+This project incorporates various third‑party Python packages. 
+The following is a list of key dependencies along with their license information and brief descriptions. 
+The full license texts for each are provided in the file THIRD-PARTY_LICENSES.txt
+
+ArviZ
+License: Apache-2.0
+Copyright: Copyright 2025, The ArviZ Authors.
+Website: https://github.com/arviz-devs/arviz?tab=Apache-2.0-1-ov-file
+Description: ArviZ is used for exploratory analysis of Bayesian statistics.
+
+Corner
+License: BSD 2-Clause License
+Copyright: Copyright (c) 2013-2022 Dan Foreman-Mackey
+Website: https://github.com/dfm/corner.py
+Description: Corner is used to create multi‑dimensional scatterplot matrices (commonly called “corner plots”) to visualize parameter distributions, especially from MCMC simulations.
+
+emcee
+License: MIT License
+Copyright: Copyright (c) 2010-2021 Daniel Foreman-Mackey & contributors.
+Website: https://github.com/dfm/emcee
+Description: emcee provides an ensemble MCMC sampler that enables efficient exploration of parameter spaces in complex models.
+
+h5py
+License: BSD 3‑Clause License
+Copyright: Copyright (c) 2008 Andrew Collette and contributors. All rights reserved.
+Website: https://www.h5py.org
+Description: h5py offers a Pythonic interface to the HDF5 binary data format, allowing for high‑performance I/O for large datasets.
+
+jax
+License: Apache License 2.0
+Copyright: Copyright 2024, The JAX Authors.
+Website: https://github.com/google/jax
+Description: JAX is a high‑performance numerical computing library providing automatic differentiation and just‑in‑time compilation, with support for GPU and TPU acceleration.
+
+lmfit
+License: MIT License
+Copyright: Copyright 2025, Matthew Newville, Till Stensitzki, Renee Otten, and others.
+Website: https://lmfit.github.io/lmfit-py/
+Description: lmfit provides a high‑level interface to non‑linear optimization and curve fitting problems, built on top of standard optimization routines.
+
+matplotlib
+License: Matplotlib License (a modified BSD 3‑Clause License)
+Copyright: Copyright 2012–2025 The Matplotlib development team
+Website: https://matplotlib.org/
+Description: Matplotlib is a versatile library for creating static, animated, and interactive visualizations in Python.
+Note: The license is a modified version of the standard BSD 3‑Clause License to accommodate specific terms for plotting.
+
+numpy
+License: BSD 3‑Clause License
+Copyright: Copyright (c) 2005-2025, NumPy Developers. All rights reserved.
+Website: https://numpy.org/
+Description: NumPy provides support for large, multi‑dimensional arrays and matrices, along with a vast collection of high‑level mathematical functions for performing numerical operations.
+
+pyinstaller
+License: GPL v2 (with a special exception to permit bundling applications)
+Copyright: Copyright (c) 2010-2023, PyInstaller Development Team, Copyright (c) 2005-2009, Giovanni Bajo, Based on previous work under copyright (c) 2002 McMillan Enterprises, Inc.
+Website: https://www.pyinstaller.org/
+Description: PyInstaller bundles Python applications and all their dependencies into a single package, streamlining the distribution of your software.
+Note: The special exception allows the distribution of the bundled executable under terms of your choice.
+
+PyQt6
+License: GPL v3 and/or a commercial license
+Copyright: Copyright (c) 1998‑2025, Riverbank Computing Limited
+Website: https://www.riverbankcomputing.com/software/pyqt/
+Description: PyQt6 provides Python bindings for the Qt framework, enabling the development of modern cross‑platform GUI applications.
+Note: This dual‑licensing model means you can choose the GPL license or obtain a commercial license, depending on your use case.
+
+pyqtconfig
+License: BSD 3‑Clause License
+Copyright: Copyright (c) 2013, Martin Fitzpatrick. All rights reserved.
+Website: https://github.com/pythonguis/pyqtconfig
+Description: pyqtconfig supplies configuration details for PyQt, facilitating platform‑specific customization and build options.
+Note: It is generally covered by the same licensing as PyQt6.
+
+scipy
+License: BSD 3‑Clause License
+Copyright: Copyright (c) 2001-2002 Enthought, Inc. 2003, SciPy Developers. All rights reserved.
+Website: https://www.scipy.org/
+Description: SciPy builds on NumPy by providing a collection of mathematical algorithms and convenience functions for tasks such as optimization, integration, interpolation, and statistical computations.
+
+
+--------------------------------------------------------
+Icons
+--------------------------------------------------------
+This project incorporates Tabler Icons and modified Tabler icons in their GUI 
+The full license text is provided in the file THIRD-PARTY_LICENSES.txt
+
+Tabler Icons
+License: MIT License
+Copyright: Copyright (c) 2018-2024 Tabler
+Source: https://tabler-icons.io/
+Description: Icons used in the application for GUI elements.
+
+
+--------------------------------------------------------
+Fonts
+--------------------------------------------------------
+This project uses Google Roboto Fonts as the main GUI Font
+The full license text is provided in the file THIRD-PARTY_LICENSES.txt
+
+Google Roboto Fonts
+License: SIL Open Font License, Version 1.1
+Copyright: Copyright 2011 The Roboto Project Authors
+Source: https://github.com/googlefonts/roboto-classic
+Description: The Roboto fonts used in the application.
+
+
+--------------------------------------------------------
+Despite great care, it is possible that not all packages have been listed accurately or in full. If you notice any discrepancies or missing information, please let us know by contacting us at https://github.com/pytapas/tapas."
