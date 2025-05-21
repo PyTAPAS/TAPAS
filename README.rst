@@ -1,7 +1,7 @@
 .. raw:: html
    <p align="center">
      <img
-       src="https://github.com/PyTAPAS/TAPAS/blob/upload1/docs/_static/splash.png"
+       src="https://github.com/PyTAPAS/TAPAS/blob/main/docs/_static/splash.png"
        alt="Project Icon"
        width="250px"
      />
