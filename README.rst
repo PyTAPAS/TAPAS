@@ -36,6 +36,102 @@ What is TAPAS?
 
 
 ========
+Installation Guide
+========
+There are three ways to install and run TAPAS
+
+1. Download & Run the Bundled App
+2. Install from PyPI
+3. Install from Source
+
+Bundled App (GitHub Release)
+----------------------------
+
+#. Visit the `Releases page on GitHub <https://github.com/PyTAPAS/TAPAS/releases>`_  
+#. Download the ZIP for your platform (e.g. ``TAPAS_vX.Y.Z.zip``).  
+#. Extract the ZIP to a folder of your choice.  
+#. Run the executable:
+
+   - **Windows**::  
+     Double-click ``tapas_gui.exe`` (or ``tapas.exe``).  
+
+   - **macOS / Linux**::  
+     .. code-block:: bash
+
+        chmod +x tapas_gui
+        ./tapas_gui
+
+No Python installation or environment setup is required.
+
+Install from PyPI
+-----------------
+
+#. Install via pip::
+
+      pip install tapas-gui
+
+#. Launch the GUI::
+
+   - Use the console script::
+
+     .. code-block:: bash
+
+        tapas
+
+   - Or invoke as a module::
+
+     .. code-block:: bash
+
+        python -m tapas
+
+Both commands will start the same TAPAS graphical interface.
+
+From Source (Development Workflow)
+---------------------------------
+
+#. Obtain the source:
+
+   - Clone the repo::
+
+        git clone https://github.com/philipp-f/tapas.git
+        cd tapas
+
+   - **OR** download “Source code (zip)” from GitHub and extract into a folder.
+
+#. Create and activate a virtual environment::
+
+   - **Windows (cmd.exe)**::
+
+        python -m venv .venv
+        .venv\Scripts\activate
+
+   - **Windows (PowerShell)**::
+
+        python -m venv .venv
+        .venv\Scripts\Activate.ps1
+
+   - **macOS / Linux**::
+
+        python3 -m venv .venv
+        source .venv/bin/activate
+
+#. Install dependencies and the editable package::
+
+   .. code-block:: bash
+
+      pip install --upgrade pip
+      pip install -e .
+
+   This reads `pyproject.toml` and installs all required dependencies.
+
+#. Launch TAPAS::
+
+   At the project root, run::
+
+      python launch_TAPAS.py
+
+
+========
 Documentation
 ========
 A detailed documentation can be found
