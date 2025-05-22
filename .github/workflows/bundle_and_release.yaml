@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "pyproject.toml"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -19,29 +20,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install toml
+        run: python -m pip install toml
+
       - name: Read version from pyproject.toml
         id: read-version
         run: |
-          VERSION=$(python - <<'EOF'
-import toml
-py = toml.loads(open('pyproject.toml','r', encoding='utf-8').read())
-print(py['project']['version'])
-EOF
-)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          version=$(python -c "import toml; print(toml.load(open('pyproject.toml', encoding='utf-8'))['project']['version'])")
+          echo "version=$version" >> $GITHUB_OUTPUT
 
   build-windows:
     name: Build on Windows
     needs: prep
     runs-on: windows-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
-          python-version: 3.11
+          python-version: "3.11"
 
       - name: Install bundle deps
         run: |
@@ -51,8 +54,7 @@ EOF
       - name: PyInstaller build
         env:
           VERSION: ${{ needs.prep.outputs.version }}
-        run: |
-          python build/pyinstaller.py
+        run: python build/pyinstaller.py
 
       - name: Upload Windows EXE
         uses: actions/upload-artifact@v3
