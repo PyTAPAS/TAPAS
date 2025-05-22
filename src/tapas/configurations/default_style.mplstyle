@@ -1,0 +1,42 @@
+text.color  : 'black'
+axes.edgecolor : 'black'
+
+mathtext.default : "regular"
+svg.fonttype: "none" 
+pdf.fonttype: 42
+
+
+axes.labelcolor : 'black'
+xtick.color : 'black'
+ytick.color : 'black'
+axes.prop_cycle : cycler('color', ["brown", "navy", "forestgreen", "goldenrod", "darkturquoise",  "mediumorchid",   "slategray", "lawngreen", "hotpink"])
+
+figure.dpi : 100.0
+
+figure.facecolor : "none"    
+ figure.autolayout: True
+savefig.transparent : True 
+
+
+xtick.direction : "in"
+xtick.top : True
+xtick.major.size : 5
+xtick.minor.size : 2.5
+ytick.major.size : 5
+ytick.minor.size : 2.5
+ytick.direction : "in"
+axes.formatter.limits : -3, 4
+axes.grid : False
+axes3d.grid : False
+ytick.right : True
+legend.labelspacing : 0.2
+legend.handlelength : 0.5
+legend.framealpha : 0
+legend.loc : upper right
+
+
+
+
+path.simplify : True
+
+path.simplify_threshold : 0.0
