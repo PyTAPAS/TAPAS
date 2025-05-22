@@ -136,6 +136,10 @@ pyinstaller_args = [
     '--hidden-import', 'h5py',
     '--hidden-import', 'jax.experimental.ode',
 
+    '--collect-submodules', 'jax',
+    '--collect-binaries',  'jaxlib',
+    
+
     # Application settings:
     '--name', f'tapas_{version}',
     '--noconfirm',
