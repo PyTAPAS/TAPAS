@@ -69,18 +69,20 @@ jobs:
     name: Create GitHub Release & Attach ZIP
     needs: [prep, build-windows]
     runs-on: ubuntu-latest
+  
     steps:
       - name: Download ZIP artifact
         uses: actions/download-artifact@v4.1.7
         with:
+          name: tapas-windows-${{ needs.prep.outputs.version }}
           path: release-artifact
-
+  
       - name: Create or update GitHub Release
         id: gh_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.prep.outputs.version }}
-          name: "v${{ needs.prep.outputs.version }}"
+          name: v${{ needs.prep.outputs.version }}
           draft: false
           prerelease: false
           files: release-artifact/*.zip
