@@ -55,13 +55,6 @@ Bundled App (GitHub Release)
 #. Extract the ZIP to a folder of your choice.  
 #. Run the executable:
 
-   - **Windows**::  
-     Double-click ``tapas.exe``
-
-   - **macOS / Linux**:: 
-
-     chmod +x tapas
-     ./tapas
 
 No Python installation or environment setup is required.
 
