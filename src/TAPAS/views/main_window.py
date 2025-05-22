@@ -34,7 +34,7 @@ import numpy as np
 from pyqtconfig import ConfigManager
 
 # PyQt6 Imports
-from PyQt6.QtCore import Qt, pyqtSlot, QUrl, QByteArray, QSize, QProcess, QCoreApplication
+from PyQt6.QtCore import Qt, pyqtSlot, QUrl, QByteArray, QSize, QProcess, QCoreApplication, QProcessEnvironment
 from PyQt6.QtGui import (
     QIcon,
     QAction,
@@ -75,9 +75,9 @@ def resource_path(*parts: str) -> Path:
     a `pathlib.Path` pointing to it on disk '''
     if getattr(sys, "frozen", False):
         # PyInstaller: files were collected into _MEIPASS under the same subfolders
-        return Path(sys._MEIPASS, "TAPAS", *parts)
+        return Path(sys._MEIPASS, "tapas", *parts)
     resource_subpath = "/".join(parts)
-    filename = pkg_resources.resource_filename("TAPAS", resource_subpath)
+    filename = pkg_resources.resource_filename("tapas", resource_subpath)
     return Path(filename)
 
 
@@ -502,29 +502,32 @@ class MainWindow(QMainWindow):
 
     def new_project(self) -> None:
         ''' action, that create a detached new TAPAS instance in all install modes.'''
-        args = QCoreApplication.arguments()[1:]  # drop the “program name”
-        
-        if getattr(sys, "frozen", False):
-            # PyInstaller bundle: relaunch the bundled exe
-            program = QCoreApplication.applicationFilePath()
-        else:
-            # Not frozen → script or pip
-            # 1) Try to find the 'tapas' console‐script on PATH
-            program = shutil.which("tapas")  
-            if program:
-                # found the tapas launcher
-                pass  
-            else:
-                # fallback: run `python -m TAPAS`
-                program = sys.executable
-                args = ["-m", "TAPAS"] + args
+        argv = QCoreApplication.arguments()            # e.g. ["app.py", …] or ["__main__.py", …] or ["tapas", …]
+        prog = QCoreApplication.applicationFilePath()  # e.g. "/usr/bin/python3" or ".../tapas.exe"
+        cwd  = QCoreApplication.applicationDirPath()
     
-        # Detached launch in the same working dir
-        QProcess.startDetached(
-            program,
-            args,
-            QCoreApplication.applicationDirPath(),
-        )
+        name0 = Path(argv[0]).name
+    
+        prog_stem  = Path(prog).stem.lower()
+
+        # 1) PyInstaller bundle or real EXE: prog is NOT python
+        if not prog_stem.startswith("python"):
+            # drop the first element (the exe path)
+            args = argv[1:]
+    
+        # 2) Launched by python interpreter
+        else:
+            # a) module form: argv[0] == "__main__.py"
+            if name0 == "__main__.py":
+                args = ["-m", "tapas", *argv[1:]]
+            # b) direct-script form: argv[0].endswith(".py")
+            elif name0.lower().endswith(".py"):
+                args = argv
+            # c) console-script shim: python.exe [no .py in argv[0]]
+            else:
+                args = ["-m", "tapas", *argv[1:]]
+    
+        QProcess.startDetached(prog, args, cwd)
 
     def open_project_gui(self) -> None:
         ''' action, that gets project path via FileDialog, loads new project and configurations '''
