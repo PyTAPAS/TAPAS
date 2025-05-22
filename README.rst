@@ -1,4 +1,4 @@
-.. figure:: docs/_static/splash.png
+.. figure:: src/tapas/assets/splash.png
    :alt: Project Icon
    :align: center
    :width: 200px
@@ -53,13 +53,13 @@ Bundled App (GitHub Release)
 #. Run the executable:
 
    - **Windows**::  
-     Double-click ``tapas_gui.exe`` (or ``tapas.exe``).  
+     Double-click ``tapas.exe``
 
    - **macOS / Linux**::  
      .. code-block:: bash
 
-        chmod +x tapas_gui
-        ./tapas_gui
+        chmod +x tapas
+        ./tapas
 
 No Python installation or environment setup is required.
 
