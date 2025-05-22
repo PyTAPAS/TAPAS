@@ -57,7 +57,7 @@ jobs:
         run: python build/pyinstaller.py
 
       - name: Upload Windows EXE
-        uses: actions/upload-artifact@v2.3.1
+        uses: actions/upload-artifact@v4.3.1
         with:
           name: tapas-windows-v${{ needs.prep.outputs.version }}
           path: dist/tapas_${{ needs.prep.outputs.version }}.exe
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows artifact
-        uses: actions/download-artifact@v2.0.3
+        uses: actions/download-artifact@v4.1.7
         with:
           path: win-artifact
 
