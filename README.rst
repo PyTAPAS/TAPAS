@@ -1,4 +1,4 @@
-.. figure:: src/tapas/assets/splash.png
+.. figure:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/splash.png
    :alt: Project Icon
    :align: center
    :width: 200px
