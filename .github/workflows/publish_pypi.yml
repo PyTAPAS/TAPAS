@@ -33,7 +33,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
       - name: Delete old pypi deployments
-        uses: strumwolf/delete-deployments@v2
+        uses: strumwolf/delete-deployments@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: pypi
