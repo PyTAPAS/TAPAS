@@ -64,7 +64,7 @@ jobs:
 
   release:
     name: Create or Update Release (Windows Only)
-    needs: build-windows
+    needs: [build-windows, prep]
     runs-on: ubuntu-latest
     steps:
       - name: Download Windows artifact
