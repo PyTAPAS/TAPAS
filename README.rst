@@ -29,6 +29,10 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml
    :alt: CodeQL Analysis Status
 
+.. image:: https://img.shields.io/pypi/v/pytapas.svg
+   :target: https://pypi.org/project/pytapas/
+   :alt: PyPI version
+
 
 What is TAPAS?
 ==============
