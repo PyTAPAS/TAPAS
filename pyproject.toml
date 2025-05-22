@@ -2,21 +2,25 @@
 requires      = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
-
 [project]
-name            = "tapas-gui"
-version         = "1.0.1"
+name            = "pytapas"
+version         = "1.0.3"
 description     = "Transient Absorption Processing & Analysis Software"
 readme          = "README.md"
 requires-python = ">=3.11, <3.12"
-license         = {file = "LICENSE"}
+
+license         = "GPL-3.0-or-later"
+
 authors         = [{name = "Philipp Frech"}]
 classifiers = [
   "Programming Language :: Python :: 3.11",
-  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)", 
   "Operating System :: OS Independent",
 ]
 
+license-files = [
+  "LICENSE",
+  "THIRD-PARTY_LICENSES.txt",
+]
 
 dependencies = [
   "arviz>=0.21.0",
@@ -32,31 +36,23 @@ dependencies = [
   "scipy>=1.15.2",
 ]
 
-
-
 [project.optional-dependencies]
 dev    = ["build>=1.2.2"]
 bundle = ["pyinstaller>=6.13"]
 
-
 [project.scripts]
-tapas = "TAPAS.app:run"
-
-[tool.setuptools]
-license-files = ["LICENSE", "THIRD-PARTY_LICENSES.txt"]
+tapas = "tapas.app:run"
 
 
 [tool.setuptools.package-data]
-TAPAS = [
+tapas = [
   "assets/**/*",
   "configurations/**/*",
   "log/**/*",
-  "LICENSE.txt",
+  "LICENSE",
   "THIRD-PARTY_LICENSES.txt",
   "THIRD-PARTY_ACKNOWLEDGEMENTS.txt",
 ]
 
-
 [tool.setuptools.packages.find]
 where = ["src"]
-
