@@ -23,7 +23,7 @@ import sys
 from pathlib import Path
 import PyInstaller.__main__
 import arviz  # imported to locate package data
-import toml
+import tomllib
 
 
 
@@ -34,7 +34,8 @@ src_root = project_root / "src"
 tapas_pkg = src_root / "tapas"
 os.chdir(project_root)
 
-pyproject = toml.loads((project_root/"pyproject.toml").read_text())
+with open(project_root / "pyproject.toml", "rb") as f:
+    pyproject = tomllib.load(f)
 version = pyproject["project"]["version"]
 
 
