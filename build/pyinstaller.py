@@ -135,8 +135,10 @@ pyinstaller_args = [
     '--hidden-import', 'pyqtconfig',
     '--hidden-import', 'h5py',
     '--hidden-import', 'jax.experimental.ode',
+    '--hidden-import', 'jax._src.lib.utils',
 
     '--collect-submodules', 'jax',
+    '--collect-binaries',  'jaxlib',
     '--collect-binaries',  'jaxlib',
     
 
