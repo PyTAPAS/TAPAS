@@ -38,7 +38,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev    = ["build>=1.2.2"]
-bundle = ["pyinstaller>=6.13, toml>=0.10.2"]
+bundle = [
+  "pyinstaller>=6.13, 
+  toml>=0.10.2",
+]
 
 [project.scripts]
 tapas = "tapas.app:run"
