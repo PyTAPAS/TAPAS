@@ -3,9 +3,8 @@
    :align: center
    :width: 200px
 
-========
 TAPAS
-========
+=====
 
 **Transient Absorption Processing & Analysis Software**
 
@@ -30,14 +29,14 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml
    :alt: CodeQL Analysis Status
 
-========
+
 What is TAPAS?
-========
+==============
 
 
-========
 Installation Guide
-========
+==================
+
 There are three ways to install and run TAPAS
 
 1. Download & Run the Bundled App
@@ -131,16 +130,16 @@ From Source (Development Workflow)
       python launch_TAPAS.py
 
 
-========
 Documentation
-========
+=============
+
 A detailed documentation can be found
 `here <https://tapas-docs.readthedocs.io/en/latest/>`_.
 
 
-========
 License
-========
+=======
+
 Copyright 2025 Philipp Frech
 
 This program is free software: you can redistribute it and/or modify
