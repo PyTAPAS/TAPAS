@@ -90,7 +90,7 @@ Install from PyPI
 Both commands will start the same TAPAS graphical interface.
 
 From Source (Development Workflow)
----------------------------------
+----------------------------------
 
 #. Obtain the source:
 
