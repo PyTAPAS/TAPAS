@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name            = "pytapas"
-version         = "1.0.17"
+version         = "1.0.18"
 description     = "Transient Absorption Processing & Analysis Software"
 readme          = "README.rst"
 requires-python = ">=3.11, <3.12"
@@ -42,7 +42,6 @@ dev = ["build>=1.2.2"]
 bundle = [
   "pyinstaller>=6.13",
   "pyinstaller-hooks-contrib>=2025.3",
-  "toml>=0.10.2",
 ]
 
 [project.scripts]
