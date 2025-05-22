@@ -1,6 +1,15 @@
+import os
+import tomllib
+
+here = os.path.abspath(os.path.dirname(__file__))
+project_root = os.path.normpath(os.path.join(here, os.pardir))
+
+with open(os.path.join(project_root, "pyproject.toml"), "rb") as f:
+    pyproject = tomllib.load(f)
+
 project   = "TAPAS"
 author    = "Philipp Frech"
-release   = "1.0.2"
+release = pyproject["project"]["version"]
 
 extensions = []
 templates_path = ["_templates"]
