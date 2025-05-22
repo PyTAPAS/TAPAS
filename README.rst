@@ -55,81 +55,66 @@ Bundled App (GitHub Release)
 #. Extract the ZIP to a folder of your choice.  
 #. Run the executable:
 
-   - **Windows**::  
-     Double-click ``tapas.exe``
-
-   - **macOS / Linux**::  
-     .. code-block:: bash
-
-        chmod +x tapas
-        ./tapas
 
 No Python installation or environment setup is required.
 
 Install from PyPI
 -----------------
 
-#. Install via pip::
+#. Install via ``pip``::
 
       pip install pytapas
 
-#. Launch the GUI::
+#. Launch the GUI:
 
-   - Use the console script::
+   * Use the console script::
 
-     .. code-block:: bash
+         tapas
 
-        tapas
+   * Or invoke as a module::
 
-   - Or invoke as a module::
+         python -m tapas
 
-     .. code-block:: bash
+   Both commands start the same TAPAS graphical interface.
 
-        python -m tapas
-
-Both commands will start the same TAPAS graphical interface.
 
 From Source (Development Workflow)
 ----------------------------------
 
 #. Obtain the source:
 
-   - Clone the repo::
+   * Clone the repo::
 
-        git clone https://github.com/philipp-f/tapas.git
-        cd tapas
+         git clone https://github.com/PyTAPAS/TAPAS.git
+         cd TAPAS
 
-   - **OR** download “Source code (zip)” from GitHub and extract into a folder.
+   * **OR** download *Source code (zip)* from GitHub and extract it.
 
-#. Create and activate a virtual environment::
+#. Create and activate a virtual environment:
 
-   - **Windows (cmd.exe)**::
+   * **Windows (cmd.exe)**::
 
-        python -m venv .venv
-        .venv\Scripts\activate
+         python -m venv .venv
+         .venv\Scripts\activate
 
-   - **Windows (PowerShell)**::
+   * **Windows (PowerShell)**::
 
-        python -m venv .venv
-        .venv\Scripts\Activate.ps1
+         python -m venv .venv
+         .venv\Scripts\Activate.ps1
 
-   - **macOS / Linux**::
+   * **macOS / Linux**::
 
-        python3 -m venv .venv
-        source .venv/bin/activate
+         python3 -m venv .venv
+         source .venv/bin/activate
 
 #. Install dependencies and the editable package::
-
-   .. code-block:: bash
 
       pip install --upgrade pip
       pip install -e .
 
-   This reads `pyproject.toml` and installs all required dependencies.
+   (This reads ``pyproject.toml`` and installs all required dependencies.)
 
 #. Launch TAPAS::
-
-   .. code-block:: bash
 
       python launch_TAPAS.py
 
