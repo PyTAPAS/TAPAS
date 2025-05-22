@@ -129,7 +129,7 @@ From Source (Development Workflow)
 
 #. Launch TAPAS::
 
-   At the project root, run::
+   .. code-block:: bash
 
       python launch_TAPAS.py
 
