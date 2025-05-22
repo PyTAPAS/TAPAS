@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name            = "pytapas"
-version         = "1.0.4"
+version         = "1.0.5"
 description     = "Transient Absorption Processing & Analysis Software"
 readme          = "README.md"
 requires-python = ">=3.11, <3.12"
@@ -43,6 +43,8 @@ bundle = ["pyinstaller>=6.13"]
 [project.scripts]
 tapas = "tapas.app:run"
 
+[tool.setuptools]
+package-dir = { "" = "src" }
 
 [tool.setuptools.package-data]
 tapas = [
@@ -56,3 +58,4 @@ tapas = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+include = ["tapas*"]   
