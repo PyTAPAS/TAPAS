@@ -1,10 +1,6 @@
 name: Build & Release Bundled App (Windows Only)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "pyproject.toml"
   workflow_dispatch:
 
 permissions:
@@ -56,36 +52,37 @@ jobs:
           VERSION: ${{ needs.prep.outputs.version }}
         run: python build/pyinstaller.py
 
-      - name: Upload Windows EXE
+      - name: Zip the entire dist folder
+        shell: powershell
+        run: |
+          Compress-Archive `
+            -Path "dist\tapas_${{ needs.prep.outputs.version }}\*" `
+            -DestinationPath "dist\tapas_${{ needs.prep.outputs.version }}-windows.zip"
+
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4.3.1
         with:
-          name: tapas-windows-v${{ needs.prep.outputs.version }}
-          path: dist/tapas_${{ needs.prep.outputs.version }}.exe
+          name: tapas-windows-${{ needs.prep.outputs.version }}
+          path: dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
 
   release:
-    name: Create or Update Release (Windows Only)
-    needs: [build-windows, prep]
+    name: Create GitHub Release & Attach ZIP
+    needs: [prep, build-windows]
     runs-on: ubuntu-latest
     steps:
-      - name: Download Windows artifact
+      - name: Download ZIP artifact
         uses: actions/download-artifact@v4.1.7
         with:
-          path: win-artifact
+          path: release-artifact
 
       - name: Create or update GitHub Release
         id: gh_release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ needs.prep.outputs.version }}
-          name: v${{ needs.prep.outputs.version }}
+          name: "v${{ needs.prep.outputs.version }}"
           draft: false
           prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Windows EXE to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: win-artifact/*.exe
+          files: release-artifact/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
