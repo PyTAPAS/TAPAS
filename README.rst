@@ -68,7 +68,7 @@ Install from PyPI
 
 #. Install via pip::
 
-      pip install tapas-gui
+      pip install pytapas
 
 #. Launch the GUI::
 

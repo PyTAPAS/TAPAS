@@ -40,15 +40,16 @@ from PyQt6.QtGui import (
 )
 from PyQt6.QtSvg import QSvgRenderer
 
+
 def resource_path(*parts: str) -> Path:
     ''' find where that resource lives at runtime—
     whether in your source tree, an installed wheel, or inside a PyInstaller bundle—and returns
     a `pathlib.Path` pointing to it on disk '''
     if getattr(sys, "frozen", False):
         # PyInstaller: files were collected into _MEIPASS under the same subfolders
-        return Path(sys._MEIPASS, "TAPAS", *parts)
+        return Path(sys._MEIPASS, "tapas", *parts)
     resource_subpath = "/".join(parts)
-    filename = pkg_resources.resource_filename("TAPAS", resource_subpath)
+    filename = pkg_resources.resource_filename("tapas", resource_subpath)
     return Path(filename)
 
 
@@ -206,10 +207,8 @@ def run():
 
     splash.finish(app.main_window)
 
-    try:
-        sys.exit(app.exec())
-    except SystemExit:
-        pass
+    sys.exit(app.exec())
+
 
 
 if __name__ == '__main__':

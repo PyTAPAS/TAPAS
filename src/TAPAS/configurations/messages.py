@@ -32,11 +32,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-The font assets included in this distribution are licensed under the SIL Open 
-Font License, Version 1.1. They remain under the terms of that license regardless 
+The font assets included in this distribution are licensed under the SIL Open
+Font License, Version 1.1. They remain under the terms of that license regardless
 of the licensing of the overall software'''
 
-
+from .. import __version__
 
 class Widgets:
     i01 = 'Enter ground-state absorbance data path...'
@@ -199,7 +199,7 @@ class ToolTips:
     t124 = 'cancel evaluation after the next run'
 
 class Status:
-    s00 = 'TAPAS: Transient Absorption Processing & Analysis Software\n\nTAPAS Version 1.0.1 stable\n\nPython 3.11.11\nPyQT 6.9\n\nCopyright © 2025 Philipp Frech\nUniversity of Tübingen\n\n'+ ('_' * 50)+'\n\nLicensed under GPL-3.0-or-later\n'
+    s00 = f'TAPAS: Transient Absorption Processing & Analysis Software\n\nTAPAS Version {__version__} stable\n\nPython 3.11.11\nPyQT 6.9\n\nCopyright © 2025 Philipp Frech\nUniversity of Tübingen\n\n'+ ('_' * 50)+'\n\nLicensed under GPL-3.0-or-later\n'
     s01 = 'path changed'
     s02 = 'data fetched'
     s03 = 'data cleared'
