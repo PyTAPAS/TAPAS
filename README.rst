@@ -25,7 +25,7 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Latest Release
 
-.. image:: https://img.shields.io/static/v1?label=Download&message=Windows&color=blue&logo=windows&logoColor=white
+.. image:: "https://img.shields.io/static/v1?label=Download&message=Windows&color=blue&logo=windows&logoColor=white"
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Windows
 
