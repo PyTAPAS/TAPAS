@@ -142,7 +142,7 @@ pyinstaller_args = [
     '--name', f'tapas_{version}',
     '--noconfirm',
     '--strip',
-    '--noarchive',
+    '--debug=noarchive',
     '--noconsole',
     # '--debug=all'
 ]
