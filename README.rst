@@ -116,7 +116,7 @@ From Source (Development Workflow)
 
 #. Launch TAPAS::
 
-      python launch_TAPAS.py
+      python launch_tapas.py
 
 
 Documentation
