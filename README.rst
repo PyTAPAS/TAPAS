@@ -25,19 +25,19 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Latest Release
 
-.. image:: https://img.shields.io/badge/Download-Windows-blue?logo=windows&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-windows-v{{RELEASE}}.zip
+.. image:: https://img.shields.io/static/v1?label=Download&message=Windows&color=blue&logo=windows&logoColor=white
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Windows
 
 .. image:: https://img.shields.io/badge/Download-Linux-orange?logo=linux&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-linux-v{{RELEASE}}.tar.gz
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Linux
 
 .. image:: https://img.shields.io/badge/Download-macOS-black?logo=apple&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-macos-v{{RELEASE}}.tar.gz
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for macOS
 
-.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-4d88ff.svg
+.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Covenant-4d88ff.svg
    :alt: Code of Conduct
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
 
