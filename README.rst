@@ -29,11 +29,11 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Windows
 
-.. image:: https://img.shields.io/badge/Download-Linux-orange?logo=linux&logoColor=white
+.. image:: https://img.shields.io/static/v1?label=Download&message=Linux&color=orange&logo=linux&logoColor=white
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Linux
 
-.. image:: https://img.shields.io/badge/Download-macOS-black?logo=apple&logoColor=white
+.. image:: https://img.shields.io/static/v1?label=Download&message=macOS&color=black&logo=apple&logoColor=white
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for macOS
 
