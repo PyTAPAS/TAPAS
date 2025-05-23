@@ -33,7 +33,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-latest]
         
     steps:
       - uses: actions/checkout@v4
@@ -64,6 +64,12 @@ jobs:
         run: |
           tar czf dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz \
             -C dist tapas_${{ needs.prep.outputs.version }}
+            
+      - name: Package dist folder (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          tar czf dist/tapas_${{ needs.prep.outputs.version }}-macos.tar.gz \
+            -C dist tapas_${{ needs.prep.outputs.version }}
 
       - name: Upload Build artifact
         uses: actions/upload-artifact@v4
@@ -72,6 +78,7 @@ jobs:
           path: |
             dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
             dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz
+            dist/tapas_${{ needs.prep.outputs.version }}-macos.tar.gz
           retention-days: 5
 
   release:
