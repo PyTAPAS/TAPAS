@@ -93,6 +93,8 @@ jobs:
           name: v${{ needs.prep.outputs.version }}
           draft: false
           prerelease: false
-          files: release-artifacts/*.zip,release-artifacts/*.tar.gz
+          files: |
+            release-artifacts/**/*.zip
+            release-artifacts/**/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
