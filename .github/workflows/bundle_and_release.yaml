@@ -24,7 +24,7 @@ jobs:
       - name: Read version from pyproject.toml
         id: read-version
         run: |
-          version=$(python -c "import tomllib; print(tomllib.loads(open('pyproject.toml','rb').read())['project']['version'])")
+          version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           echo "version=$version" >> $GITHUB_OUTPUT
 
   build:
