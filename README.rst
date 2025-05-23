@@ -21,6 +21,22 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
+.. image:: https://img.shields.io/github/v/release/PyTAPAS/TAPAS?label=Latest%20Release
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :alt: Latest Release
+
+.. image:: https://img.shields.io/badge/Download-Windows-blue?logo=windows&logoColor=white
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :alt: Download for Windows
+
+.. image:: https://img.shields.io/badge/Download-Linux-orange?logo=linux&logoColor=white
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :alt: Download for Linux
+
+.. image:: https://img.shields.io/badge/Download-macOS-black?logo=apple&logoColor=white
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :alt: Download for macOS
+
 .. image:: https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-4d88ff.svg
    :alt: Code of Conduct
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
