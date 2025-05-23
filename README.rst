@@ -26,15 +26,15 @@ TAPAS
    :alt: Latest Release
 
 .. image:: https://img.shields.io/badge/Download-Windows-blue?logo=windows&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-windows-v|release|.zip
    :alt: Download for Windows
 
 .. image:: https://img.shields.io/badge/Download-Linux-orange?logo=linux&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-linux-v|release|.tar.gz
    :alt: Download for Linux
 
 .. image:: https://img.shields.io/badge/Download-macOS-black?logo=apple&logoColor=white
-   :target: https://github.com/PyTAPAS/TAPAS/releases/latest
+   :target: https://github.com/PyTAPAS/TAPAS/releases/latest/download/tapas-macos-v|release|.tar.gz
    :alt: Download for macOS
 
 .. image:: https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-4d88ff.svg
