@@ -74,7 +74,7 @@ jobs:
       - name: Upload Build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tapas-${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}-v${{ needs.prep.outputs.version }}
+          name: tapas-${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'ubuntu-latest' && 'linux' || 'macos' }}-v${{ needs.prep.outputs.version }}
           path: |
             dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
             dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz
