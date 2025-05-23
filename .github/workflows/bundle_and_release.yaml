@@ -52,17 +52,18 @@ jobs:
           VERSION: ${{ needs.prep.outputs.version }}
         run: python build/pyinstaller.py
 
-      - name: Package dist folder
-        shell: ${{ matrix.os == 'windows-latest' && 'powershell' || 'bash' }}
+      - name: Package dist folder (Windows)
+        if: runner.os == 'Windows'
+        shell: powershell
         run: |
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            Compress-Archive `
-              -Path "dist\tapas_${{ needs.prep.outputs.version }}\*" `
-              -DestinationPath "dist/tapas_${{ needs.prep.outputs.version }}-windows.zip"
-          else
-            tar czf dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz \
-              -C dist tapas_${{ needs.prep.outputs.version }}
-          fi
+          Compress-Archive -Path "dist\tapas_${{ needs.prep.outputs.version }}\*" `
+            -DestinationPath "dist/tapas_${{ needs.prep.outputs.version }}-windows.zip"
+
+      - name: Package dist folder (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          tar czf dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz \
+            -C dist tapas_${{ needs.prep.outputs.version }}
 
       - name: Upload Build artifact
         uses: actions/upload-artifact@v4
