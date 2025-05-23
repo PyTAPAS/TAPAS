@@ -26,6 +26,11 @@ jobs:
         run: |
           version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Update README badges
+        run: |
+          sed -i \
+            "s/{{RELEASE}}/${{ steps.read-version.outputs.version }}/g" \
+            README.rst
 
   build:
     name: Build & Package on ${{ matrix.os }}
