@@ -25,7 +25,7 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Latest Release
 
-.. image:: https://img.shields.io/static/v1?label=Download&message=Windows&color=blue&logo=windows&logoColor=white
+.. image:: https://img.shields.io/badge/Download-Windows-blue.svg?logo=windows&logoColor=white
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for Windows
 
@@ -37,7 +37,7 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for macOS
 
-.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Covenant-4d88ff.svg
+.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Covenant%20v2.1-4d88ff.svg
    :alt: Code of Conduct
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
 
