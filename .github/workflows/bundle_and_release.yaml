@@ -1,4 +1,4 @@
-name: Build & Release Bundled App (Windows Only)
+name: Build & Release Bundled App
 
 on:
   workflow_dispatch:
@@ -21,28 +21,28 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install toml
-        run: python -m pip install toml
-
       - name: Read version from pyproject.toml
         id: read-version
         run: |
-          version=$(python -c "import toml; print(toml.load(open('pyproject.toml', encoding='utf-8'))['project']['version'])")
+          version=$(python -c "import tomllib; print(tomllib.loads(open('pyproject.toml','rb').read())['project']['version'])")
           echo "version=$version" >> $GITHUB_OUTPUT
 
-  build-windows:
-    name: Build on Windows
+  build:
+    name: Build & Package on ${{ matrix.os }}
     needs: prep
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: Install bundle deps
+      - name: Install Bundle Deps
         run: |
           python -m pip install --upgrade pip
           pip install .[bundle]
@@ -52,30 +52,37 @@ jobs:
           VERSION: ${{ needs.prep.outputs.version }}
         run: python build/pyinstaller.py
 
-      - name: Zip the entire dist folder
-        shell: powershell
+      - name: Package dist folder
+        shell: ${{ matrix.os == 'windows-latest' && 'powershell' || 'bash' }}
         run: |
-          Compress-Archive `
-            -Path "dist\tapas_${{ needs.prep.outputs.version }}\*" `
-            -DestinationPath "dist\tapas_${{ needs.prep.outputs.version }}-windows.zip"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            Compress-Archive `
+              -Path "dist\tapas_${{ needs.prep.outputs.version }}\*" `
+              -DestinationPath "dist/tapas_${{ needs.prep.outputs.version }}-windows.zip"
+          else
+            tar czf dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz \
+              -C dist tapas_${{ needs.prep.outputs.version }}
+          fi
 
-      - name: Upload ZIP artifact
-        uses: actions/upload-artifact@v4.3.1
+      - name: Upload Build artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: tapas-windows-${{ needs.prep.outputs.version }}
-          path: dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
+          name: tapas-${{ matrix.os == 'windows-latest' && 'windows' || 'linux' }}-v${{ needs.prep.outputs.version }}
+          path: |
+            dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
+            dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz
+          retention-days: 5
 
   release:
-    name: Create GitHub Release & Attach ZIP
-    needs: [prep, build-windows]
+    name: Create GitHub Release & Attach Bundles
+    needs: [prep, build]
     runs-on: ubuntu-latest
   
     steps:
-      - name: Download ZIP artifact
-        uses: actions/download-artifact@v4.1.7
+      - name: Download Build artifacts
+        uses: actions/download-artifact@v4
         with:
-          name: tapas-windows-${{ needs.prep.outputs.version }}
-          path: release-artifact
+          path: release-artifacts
   
       - name: Create or update GitHub Release
         id: gh_release
@@ -85,6 +92,6 @@ jobs:
           name: v${{ needs.prep.outputs.version }}
           draft: false
           prerelease: false
-          files: release-artifact/*.zip
+          files: release-artifacts/*.zip,release-artifacts/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
