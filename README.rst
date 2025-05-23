@@ -70,13 +70,22 @@ There are three ways to install and run TAPAS
 Bundled App (GitHub Release)
 ----------------------------
 
+This is the recommended way for most users. 
+
 #. Visit the `Releases page on GitHub <https://github.com/PyTAPAS/TAPAS/releases>`_  
 #. Download the ZIP for your platform (e.g. ``TAPAS_vX.Y.Z.zip``).  
 #. Extract the ZIP to a folder of your choice.  
 #. Run the executable:
 
 
-No Python installation or environment setup is required.
+No Python installation or environment setup is required. 
+
+The source code can be found under::
+
+      _internal // tapas
+
+and can be changed or extended to satify user specific needs. More information can be found `here <https://tapas-docs.readthedocs.io/en/latest/>`_.
+
 
 Install from PyPI
 -----------------
