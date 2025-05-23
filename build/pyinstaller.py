@@ -141,7 +141,8 @@ pyinstaller_args = [
     # Application settings:
     '--name', f'tapas_{version}',
     '--noconfirm',
-    # '--strip',
+    '--strip',
+    '--noarchive',
     '--noconsole',
     # '--debug=all'
 ]
