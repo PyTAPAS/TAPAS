@@ -17,6 +17,14 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/blob/main/LICENSE
    :alt: License (GPLv3)
 
+.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Covenant%20v2.1-4d88ff.svg
+   :alt: Code of Conduct
+   :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
+
+.. image:: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml/badge.svg
+   :target: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml
+   :alt: CodeQL Analysis Status
+
 .. image:: https://img.shields.io/github/last-commit/PyTAPAS/TAPAS.svg
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
@@ -36,14 +44,6 @@ TAPAS
 .. image:: https://img.shields.io/static/v1?label=Download&message=macOS&color=black&logo=apple&logoColor=white
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
    :alt: Download for macOS
-
-.. image:: https://img.shields.io/badge/Code%20of%20Conduct-Covenant%20v2.1-4d88ff.svg
-   :alt: Code of Conduct
-   :target: https://github.com/PyTAPAS/TAPAS/blob/main/CODE_OF_CONDUCT.md
-
-.. image:: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml/badge.svg
-   :target: https://github.com/PyTAPAS/TAPAS/actions/workflows/codeql-analysis.yml
-   :alt: CodeQL Analysis Status
 
 .. image:: https://img.shields.io/pypi/v/pytapas.svg
    :target: https://pypi.org/project/pytapas/
