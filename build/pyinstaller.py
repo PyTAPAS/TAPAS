@@ -141,13 +141,14 @@ pyinstaller_args = [
     # Application settings:
     '--name', f'tapas_{version}',
     '--noconfirm',
-    '--strip',
     '--debug=noarchive',
     '--noconsole',
-    # '--debug=all'
 ]
 
 if icon_file and icon_file.exists():
     pyinstaller_args.extend(['--icon', str(icon_file)])
+if not sys.platform.startswith('win'):
+    pyinstaller_args.append('--strip')
+
 
 PyInstaller.__main__.run(pyinstaller_args)
