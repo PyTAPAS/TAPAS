@@ -57,15 +57,16 @@ TAPAS
 What is TAPAS?
 ==============
 
-TAPAS is a portable, user-friendly GUI for importing, processing, fitting, and visualizing time-resolved transient absorption data.   
+TAPAS is a portable, user-friendly GUI for importing, processing, fitting, and visualizing time-resolved **transient absorption** data.   
 Just download and run the cross-platform binaries — no Python environment or pip installs required.  
 For power users, every binary ships with the raw Python source and configuration files, so you can tweak kinetic models, extend fitting routines, or build custom analyses for your needs.  
-Built on Python with JAX (XLA + JIT), TAPAS delivers global-fit results and quality metrics in seconds, bundling raw imports (solvent & steady-state scans), processed data, fits, and statistics into compact HDF5 archives with auto-generated metadata.  
+Built on Python with JAX (XLA + JIT), TAPAS performs global fitting in seconds and provides detailed fit statistics, such as standard deviations and parameter correlations. 
+It organizes raw inputs (including solvent and steady-state scans), processed results, and analyses into compact HDF5 files with automatically generated metadata for easy management.
 
 **Key features:**  
 
 - **Zero-install portable binaries** for Windows, macOS, and Linux
-- **Intuitive GUI** with clear workflow—no command-line or scripting required
+- **Intuitive GUI** with clear workflow — no command-line or scripting required
 - **Flexible processing tools** like resampling, filtering, chirp- & background correction and SVD analysis
 - **Fast fitting and error estimation** powered by JAX (XLA + JIT)
 - **MCMC-based posterior analysis** of fitted parameters
