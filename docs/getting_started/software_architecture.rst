@@ -1,10 +1,4 @@
 .. _software_architecture:
-.. role:: orange
-   :class: orange
-.. role:: green
-   :class: green
-.. role:: gray
-   :class: gray
 
 Software Architecture
 =====================
