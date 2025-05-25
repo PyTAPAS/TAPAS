@@ -12,6 +12,9 @@ project   = "TAPAS"
 author    = "Philipp Frech"
 release = pyproject["project"]["version"]
 
+html_title = f"{project} {release}"
+html_logo  = "_staticicon_dark.png"
+
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",      # for Google/NumPy style docstrings
@@ -30,4 +33,9 @@ html_theme_options = {
     "path_to_docs": "docs",
     "use_repository_button": True,
     "use_issues_button": True,
+    "logo": {
+    "image_light": "_static/icon_light.png",
+    "image_dark":  "_static/icon_dark.png",
+    "alt_text":    "TAPAS Home",
+    },
 }
