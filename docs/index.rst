@@ -1,4 +1,3 @@
-========================
 TAPAS: Transient Absorption Processing & Analysis Software
 ==========================================================
 
@@ -24,9 +23,11 @@ It organizes raw inputs (including solvent and steady-state scans), processed re
 
 
 This documentation contains a number of usefull resources and is structured as follows: 
+
 - :doc:`Getting Started <getting_started/index>` gives basic information about installation, the concept and architecture of the software.
 - :doc:`Using TAPAS <using_tapas/index>` demonstrates and explains every functionality found in TAPAS
 - :doc:`Tutorials <tutorial/index>` showcase the workflow routines for different tasks and problems
+
 
 .. toctree::
    :maxdepth: 1
