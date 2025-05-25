@@ -1,5 +1,5 @@
 Using TAPAS
-=========
+===========
 
 .. toctree::
    :maxdepth: 1
