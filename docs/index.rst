@@ -8,11 +8,8 @@ TAPAS: Transient Absorption Processing & Analysis Software
 
    getting_started/index
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Using TAPAS
 
-   using_tapas/index
+
 
 Contents
 --------
