@@ -65,6 +65,7 @@ It organizes raw inputs (including solvent and steady-state scans), processed re
 
 **Key features:**  
 
+- **free and Open-Source** software
 - **Zero-install portable binaries** for Windows, macOS, and Linux
 - **Intuitive GUI** with clear workflow — no command-line or scripting required
 - **Flexible processing tools** like resampling, filtering, chirp- & background correction and SVD analysis
@@ -88,15 +89,17 @@ There are three ways to install and run TAPAS
 Bundled App (GitHub Release)
 ----------------------------
 
-This is the recommended way for most users. 
+This is the recommended way for non python users. 
 
 #. Visit the `Releases page on GitHub <https://github.com/PyTAPAS/TAPAS/releases>`_  
 #. Download the ZIP for your platform (e.g. ``TAPAS_vX.Y.Z.zip``).  
-#. Extract the ZIP to a folder of your choice.  
-#. Run the executable:
+#. Extract the ZIP to a folder of your choice.
+#. Your OS might flag the app since we don't purchase a commercial code-signing certificate. You can safetly ignore these warnings
+#. Run the executable. The first cold start might take several seconds.
 
 
-No Python installation or environment setup is required. 
+No Python installation or environment setup is required. Because this application is built and distributed directly from source and isn’t signed by a commercial certificate authority, you may see warnings from your OS when you first download or launch it. This is expected and does **not** indicate any malware.
+
 
 The source code can be found under::
 
