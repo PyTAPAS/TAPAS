@@ -1,11 +1,10 @@
 Getting Started
 ===============
 
-1. Install TAPAS  
-2. Clone the repo  
-3. Build the docs:
-   
-   .. code-block:: bash
+.. toctree::
+   :maxdepth: 1
 
-      cd docs
-      make html
+   installation
+   concept
+   project_structure
+   software_architecture
