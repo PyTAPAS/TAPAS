@@ -40,3 +40,17 @@ html_theme_options = {
     "alt_text":    "TAPAS Home",
     },
 }
+
+rst_prolog = """
+.. role:: red
+   :class: red
+
+.. role:: orange
+   :class: orange
+
+.. role:: green
+   :class: green
+
+.. role:: gray
+   :class: gray
+"""
