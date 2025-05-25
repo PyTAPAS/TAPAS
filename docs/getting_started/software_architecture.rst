@@ -9,8 +9,10 @@ We use a lightweight, MVC-inspired design: the View layer owns basic input handl
    :align: center
    :figwidth: 80%
 
-   An overview of our MVC architecture.
+   An overview of our MVC architecture. The View layer is shown in green which concentrates and validates the user input and informs the controller (orange). The controller gets the data from the model (gray) manipulates it and updates the model. Finally, the model emits a signal catched by the View which updates the GUI. 
 
+
+The corresponding source code folder structure is shown below. 
 
 .. code-block:: text
 
@@ -21,6 +23,7 @@ We use a lightweight, MVC-inspired design: the View layer owns basic input handl
    ├── configurations/
    │   ├── gui input configurations
    │   ├── gui style configurations
+   │   ├── messages
    │   ├── plotting configurations
    │   └── logging configurations
    ├── controllers/
@@ -44,3 +47,8 @@ We use a lightweight, MVC-inspired design: the View layer owns basic input handl
    |   |   └── ...
    │   └── main window
    └── ...
+
+If the user for example wants to change the import routine to automatically read in their metadata, they would need to adjust the corresponding functions in the import controller module. 
+If the user wants to add a different filtering method in the preprocessing step, they would add the corresoponding button in the preprocessing tabwidget module, connect the button to a function in the view module and set the function in the controller module. 
+
+The kinetic models used for local and global fitting can be found under :file:`/utils/model_fucntions.py`. A detailed instruction on how to add custom models can be found in the tutorials section. 
