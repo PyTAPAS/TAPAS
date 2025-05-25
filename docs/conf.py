@@ -12,6 +12,11 @@ project   = "TAPAS"
 author    = "Philipp Frech"
 release = pyproject["project"]["version"]
 
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",      # for Google/NumPy style docstrings
+    "sphinx_tabs.tabs",         # <-- tabs support
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
