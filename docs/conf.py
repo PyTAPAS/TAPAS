@@ -12,13 +12,12 @@ project   = "TAPAS"
 author    = "Philipp Frech"
 release = pyproject["project"]["version"]
 
-html_title = f"{project} {release}"
-html_logo  = "_staticicon_dark.png"
+html_favicon = "_static/icon_dark.png"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.napoleon",      # for Google/NumPy style docstrings
-    "sphinx_tabs.tabs",         # <-- tabs support
+    "sphinx.ext.napoleon", 
+    "sphinx_tabs.tabs", 
 ]
 
 templates_path = ["_templates"]
@@ -36,6 +35,7 @@ html_theme_options = {
     "logo": {
     "image_light": "_static/icon_light.png",
     "image_dark":  "_static/icon_dark.png",
+    "text":        f"{project} {release}",
     "alt_text":    "TAPAS Home",
     },
 }
