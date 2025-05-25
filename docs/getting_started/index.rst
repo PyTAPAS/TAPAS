@@ -1,6 +1,11 @@
+Getting Started
+===============
 
-.. toctree::
-   :maxdepth: 2
-   :caption: 🚀 Quick start
+1. Install TAPAS  
+2. Clone the repo  
+3. Build the docs:
+   
+   .. code-block:: bash
 
-   tutorials/index 
+      cd docs
+      make html
