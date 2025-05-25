@@ -41,8 +41,14 @@ dependencies = [
 dev = ["build>=1.2.2"]
 bundle = [
   "pyinstaller>=6.13",
-  "pyinstaller-hooks-contrib>=2025.3",
+  "pyinstaller-hooks-contrib>=2025.3"]
+docs = [
+"sphinx>=5.0",
+"sphinx-book-theme",
+"sphinx-tabs",
 ]
+
+
 
 [project.scripts]
 tapas = "tapas.app:run"
