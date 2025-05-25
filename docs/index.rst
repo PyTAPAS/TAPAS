@@ -12,6 +12,11 @@ TAPAS: Transient Absorption Processing & Analysis Software
 
    using_tapas/index
 
+.. toctree::
+   :maxdepth: 1
+
+   tutorial/index
+
 
 
 
