@@ -13,7 +13,7 @@ We use a lightweight, MVC-inspired design: the View layer owns basic input handl
    :align: center
    :figwidth: 80%
 
-   An overview of our MVC architecture. The View layer is shown in green which concentrates and validates the user input and informs the :orange:'controller' (orange). The controller gets the data from the model (gray) manipulates it and updates the model. Finally, the model emits a signal catched by the View which updates the GUI. 
+   An overview of our MVC architecture. The View layer is shown in green which concentrates and validates the user input and informs the :orange:`controller` (orange). The controller gets the data from the model (gray) manipulates it and updates the model. Finally, the model emits a signal catched by the View which updates the GUI. 
 
 
 The corresponding source code folder structure is shown below. 
