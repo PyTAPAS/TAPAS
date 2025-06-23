@@ -136,6 +136,7 @@ pyinstaller_args = [
     '--hidden-import', 'pyqtconfig',
     '--hidden-import', 'h5py',
     '--hidden-import', 'jax.experimental.ode',
+    '--hidden-import', 'scipy._cyutility',
     
 
     # Application settings:
