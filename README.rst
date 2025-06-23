@@ -29,9 +29,6 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
-.. raw:: html
-
-   <br />
 
 .. image:: https://img.shields.io/github/v/release/PyTAPAS/TAPAS?label=Latest%20Release
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
