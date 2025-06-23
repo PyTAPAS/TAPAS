@@ -145,17 +145,17 @@ class ComponentTab(QWidget):
         layout.addWidget(self.sc)
         self.ax_U = self.sc.fig.add_subplot(2, 2, 4)
         self.ax_s = self.sc.fig.add_subplot(2, 2, 2)
-        self.ax_Chi2 = self.sc.fig.add_subplot(2, 2, 3)
+        self.ax_res = self.sc.fig.add_subplot(2, 2, 3)
         self.ax_Vh = self.sc.fig.add_subplot(2, 2, 1)
 
         try:
             self.linthresh = utils.Converter.convert_str_input2float(
                 self.tw_input.le_linlog.text())
             if self.linthresh is None:
-                self.ax_Chi2.set_yscale('linear')
+                self.ax_res.set_yscale('linear')
                 self.ax_U.set_xscale('linear')
             else:
-                self.ax_Chi2.set_yscale(
+                self.ax_res.set_yscale(
                     'symlog', linthresh=self.linthresh, linscale=1)
 
                 self.ax_U.set_xscale(
@@ -175,19 +175,19 @@ class ComponentTab(QWidget):
         self.ax_U.set_ylabel("norm. Intensity")
         self.ax_Vh.set_xlabel(msg.Labels.wavelength)
         self.ax_Vh.set_ylabel("norm. Intensity")
-        self.ax_Chi2.set_xlabel(msg.Labels.wavelength)
-        self.ax_Chi2.set_ylabel(msg.Labels.delay)
+        self.ax_res.set_xlabel(msg.Labels.wavelength)
+        self.ax_res.set_ylabel(msg.Labels.delay)
         self.ax_s.set_title("Components")
         self.ax_U.set_title("Temporal Vectors")
         self.ax_Vh.set_title("Spectral Vectors")
-        self.ax_Chi2.set_title("Errors")
+        self.ax_res.set_title("Residuals")
         self.ax_Vh.axhline(y=0, color=self.ax_Vh.xaxis.label.get_color(
         ), linestyle="--", linewidth=1, zorder=0)
 
         self.ax_Vh.xaxis.set_major_formatter(self.sc.nm_formatter_ax)
         self.ax_U.xaxis.set_major_formatter(self.sc.delay_formatter0)
-        self.ax_Chi2.xaxis.set_major_formatter(self.sc.nm_formatter_ax)
-        self.ax_Chi2.yaxis.set_major_formatter(self.sc.delay_formatter0)
+        self.ax_res.xaxis.set_major_formatter(self.sc.nm_formatter_ax)
+        self.ax_res.yaxis.set_major_formatter(self.sc.delay_formatter0)
         self.ax_s.locator_params(axis='x', nbins=components)
         self.ax_s.set_ylim(-0.05, 1.05)
         try:
@@ -201,16 +201,16 @@ class ComponentTab(QWidget):
             s)+1), s, color=self.ax_s.xaxis.label.get_color(), zorder=0, linewidth=0.5, alpha=0.8)
         normalization = colors.TwoSlopeNorm(vmin=-5, vmax=5, vcenter=0)
         X, Y = np.meshgrid(x, y)
-        self.pcolormesh_plot = self.ax_Chi2.pcolormesh(
+        self.pcolormesh_plot = self.ax_res.pcolormesh(
             X, Y, Z - Z_calc, shading='auto', norm=normalization)
-        divider = make_axes_locatable(self.ax_Chi2)
+        divider = make_axes_locatable(self.ax_res)
         cax = divider.append_axes('right', size='5%', pad=0.05)
 
         self.cb = self.fig.colorbar(mappable=self.pcolormesh_plot, cax=cax, location="right",
                                     shrink=0.6, label=msg.Labels.delA_error)
         self.cb.minorticks_on()
         self.sc.axes_mapping = {
-            self.ax_Chi2: (self.pcolormesh_plot, self.cb)}  # mapping needed for applying scroll zooming
+            self.ax_res: (self.pcolormesh_plot, self.cb)}  # mapping needed for applying scroll zooming
 
         self.sc.mpl_connect('scroll_event', lambda event: self.sc._zoom_TA(
             event, self.sc.axes_mapping))

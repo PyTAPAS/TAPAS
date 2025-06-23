@@ -61,9 +61,11 @@ class ImportTab(QWidget):
         self.emission_input = ImportWidget(
             label="Emission Data", placeholder=msg.Widgets.i02, energy_unit=True)
         self.ta_input = ImportWidget(
-            label="TA Data", placeholder=msg.Widgets.i03, time_unit=True, energy_unit=True, delA_unit=True)
+            label="TA Data", placeholder=msg.Widgets.i03, time_unit=True, energy_unit=True,
+            delA_unit=True, matrix_orientation=True)
         self.solvent_input = ImportWidget(
-            label="Solvent", placeholder=msg.Widgets.i03, time_unit=True, energy_unit=True, delA_unit=True)
+            label="Solvent", placeholder=msg.Widgets.i03, time_unit=True, energy_unit=True,
+            delA_unit=True, matrix_orientation=True)
         self.tw_metadata_container = MetadataWidget()
         self.tw_preview_container = PreviewContainerWidget()
         self.update_config()
@@ -148,7 +150,8 @@ class ImportTab(QWidget):
                 header=self.solvent_input.sb_header.value(),
                 time_unit=self.solvent_input.cb_time_unit.currentIndex(),
                 energy_unit=self.solvent_input.cb_energy_unit.currentText(),
-                delA_unit=self.solvent_input.cb_delA_unit.currentText()))
+                delA_unit=self.solvent_input.cb_delA_unit.currentText(),
+                matrix_orientation =self.solvent_input.cb_matrix_orientation.currentIndex()))
         self.solvent_input.pb_clear.clicked.connect(
             lambda: self.import_controller.clear_all('solvent'))
 
@@ -311,7 +314,8 @@ class ImportTab(QWidget):
                                                  header=self.ta_input.sb_header.value(),
                                                  time_unit=self.ta_input.cb_time_unit.currentIndex(),
                                                  energy_unit=self.ta_input.cb_energy_unit.currentText(),
-                                                 delA_unit=self.ta_input.cb_delA_unit.currentText())
+                                                 delA_unit=self.ta_input.cb_delA_unit.currentText(),
+                                                 matrix_orientation =self.ta_input.cb_matrix_orientation.currentIndex())
             else:
                 return
         else:
@@ -320,7 +324,8 @@ class ImportTab(QWidget):
                                              header=self.ta_input.sb_header.value(),
                                              time_unit=self.ta_input.cb_time_unit.currentIndex(),
                                              energy_unit=self.ta_input.cb_energy_unit.currentText(),
-                                             delA_unit=self.ta_input.cb_delA_unit.currentText())
+                                             delA_unit=self.ta_input.cb_delA_unit.currentText(),
+                                             matrix_orientation =self.ta_input.cb_matrix_orientation.currentIndex())
 
     def set_path(self, raw_ds: str,) -> None:
         '''

@@ -156,7 +156,7 @@ class LocalFitController(GlobalFitController):
 
     def optimize_params(
             self, params: Parameters, ds: str, input_wavelength: str, wavelength_area: int,
-            Ainf: bool,  model: str, method: str, use_threshold_t0: bool) -> dict:
+            Ainf: bool,  model: str, method: str, use_threshold_t0: bool, ca_order:int) -> dict:
         '''
         performs the minimization of the objective model function and returns a dict with the
         optimized parameters and metadata
@@ -205,7 +205,7 @@ class LocalFitController(GlobalFitController):
         minner = Minimizer(self.model_theta_wrapper, params,  fcn_kws={
                            'delay': delay, 'delA': delA,  'Ainf': Ainf,  'model': model,
                            'weights': jnp.array([1]), 'use_threshold_t0': use_threshold_t0,
-                           'output': False, })
+                           'ca_order': ca_order,'output': False, })
 
         if method == 'diff-evol':
             method = 'differential_evolution'
@@ -238,10 +238,11 @@ class LocalFitController(GlobalFitController):
         fit_results['meta']['method'] = lm_fit_results.method
         fit_results['meta']['band average (nm)'] = 2 * wavelength_area
         fit_results['meta']['wavelength'] = wavelength
+        fit_results['meta']['ca_order'] = ca_order
         fit_results['meta']['time_zero_convention'] = '5% threshold' if use_threshold_t0 else 'Gaussian centroid'
         fit_results['meta']['use_threshold_t0'] = use_threshold_t0
         labels = self.get_component_labels(
-            model=fit_results['meta']['model'], Ainf=fit_results['meta']['Ainf'], num=(len(fit_results['theta'])-2))
+            model=fit_results['meta']['model'], Ainf=fit_results['meta']['Ainf'], num=(len(fit_results['theta'])-2), ca_order=ca_order, local = True)
         fit_results['meta']['components'] = labels
 
         # -------- cache data for subsequent fit statistics  ---------------------------------------
@@ -259,7 +260,7 @@ class LocalFitController(GlobalFitController):
             params=fit_results['opt_params'], delay=self.current_delay, delA=self.current_delA,
             Ainf=fit_results['meta']['Ainf'],  model=fit_results['meta']['model'],
             weights=jnp.array([1]), use_threshold_t0=fit_results['meta']['use_threshold_t0'],
-            substeps=10, output=True)
+            substeps=10, ca_order = fit_results['meta']['ca_order'], output=True)
         t_end = time.time()
         fit_results['meta']['fit_time'] += (t_end-t_start)
 
@@ -270,7 +271,7 @@ class LocalFitController(GlobalFitController):
         mean_delA = np.mean(self.current_delA)
         SST = np.sum((self.current_delA - mean_delA)**2)
         fit_results['meta']['r2'] = np.round(1 - fit_results['meta']['SSR'] / SST, 4)
-        fit_results['meta']['rsme'] = np.sqrt(np.mean(fit_results['residuals']**2))
+        fit_results['meta']['rmse'] = np.sqrt(np.mean(fit_results['residuals']**2))
         fit_results['meta']['mea'] = np.mean(np.abs(fit_results['residuals']))
 
         # -------- estimate autocorrelation (lag-1) of residuals & effective sample size -----------
@@ -287,9 +288,19 @@ class LocalFitController(GlobalFitController):
         param_items = list(fit_results['opt_params'].items())
         vary_mask = jnp.array([par.vary for name, par in param_items])
         jacobian = self.jacobian_func(
-            fit_results['theta'], self.current_delay, self.current_delA,
-            fit_results['meta']['Ainf'],  fit_results['meta']['model'], jnp.array([1]),
-            fit_results['meta']['use_threshold_t0'])
+            fit_results['theta'],
+            self.current_delay,
+            self.current_delA,
+            Ainf=fit_results['meta']['Ainf'],
+            model=fit_results['meta']['model'],
+            weights=jnp.array([1]),
+            use_threshold_t0=fit_results['meta']['use_threshold_t0'],
+            substeps=6,
+            gs=False,
+            use_bleach=False,
+            gs_spec=False,
+            ca_order=fit_results['meta']['ca_order'],
+            output=False)
         jacobian_free = jacobian[:, vary_mask]
         scale_free = self._scale_from_guess(fit_results['opt_params'])
         J_scaled = jacobian_free * scale_free[None, :]
@@ -368,10 +379,12 @@ class LocalFitController(GlobalFitController):
         # -------- unpack results ------------------------------------------------------------------
         value_formatter = tk.EngFormatter(places=1, sep="\N{THIN SPACE}")
         error_formatter = tk.EngFormatter(places=0, sep="\N{THIN SPACE}")
-        decays = [f't{i}' for i in range(1, len(fit_results['opt_params'])-1)]
+        decays = [f'τ{i}' for i in range(1, len(fit_results['opt_params'])-1)]
         decays.append('Ainf')
-        amp_norm = (sum(abs(fit_results['Amp'])))
-        amp_dict = dict(zip(decays, fit_results['Amp']))
+        amp_list = fit_results['Amp']
+        amp_list = amp_list[fit_results['meta']['ca_order']:]  # exclude irf amps from relative amp calc
+        amp_norm = (sum(abs(amp_list)))
+        amp_dict = dict(zip(decays, amp_list))
         jac_condition_number = fit_results['meta']['jac_condition_num']
 
         # -------- print reliability ---------------------------------------------------------------
@@ -440,7 +453,7 @@ class LocalFitController(GlobalFitController):
             fitting_print += f"Model: {fit_results['meta']['model']}\n"
             fitting_print += f"r²: {fit_results['meta']['r2']:.3f}\n"
             fitting_print += f"SSR: {fit_results['meta']['SSR']:.2f}\n"
-            fitting_print += f"RSME: {fit_results['meta']['rsme']:.3f} mOD\n"
+            fitting_print += f"RMSE: {fit_results['meta']['rmse']:.3f} mOD\n"
             fitting_print += f"MEA: {fit_results['meta']['mea']:.3f} mOD\n"
             fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['n_eff']:.0f} (effective)\n"
             fitting_print += f"eff residual var: {fit_results['meta']['var_resid_eff']:.2f}\n"
@@ -457,14 +470,28 @@ class LocalFitController(GlobalFitController):
             fitting_print += "errors could not be calculated:\nnon-stable derivatives\n"
             fitting_print += '\n--- PARAMETERS: ---\n'
             for k, v in fit_results['opt_params'].valuesdict().items():
-                value_str = value_formatter(v)
-                fitting_print += f"{k}: {value_str}s\n"
+                par = fit_results['opt_params'][k]
+                if not par.vary:
+                    # Fixed parameter
+                    value_str = value_formatter(v)
+                    fitting_print += f"{k}: {value_str} (fixed)\n"
+                else:
+                    # Fitted parameter
+                    amp = (f"{round(100 * amp_dict[k] / amp_norm)} %"
+                           if k not in ('t0', 'IRF') else '')
+
+                    value_str = value_formatter(v)
+                    fitting_print += (f"{k}: {amp} {value_str}s\n")
+            if fit_results['meta']['Ainf']:
+                fitting_print += 'Ainf: ' + str(round(100 * amp_dict['Ainf'] / amp_norm)) + ' %\n'
+            else:
+                fitting_print += 'Ainf: False\n'
 
             fitting_print += '\n--- FIT METRICS: ---\n'
             fitting_print += f"Model: {fit_results['meta']['model']}\n"
             fitting_print += f"r²: {fit_results['meta']['r2']:.3f}\n"
             fitting_print += f"SSR: {fit_results['meta']['SSR']:.2f}\n"
-            fitting_print += f"RSME: {fit_results['meta']['rsme']:.3f} mOD\n"
+            fitting_print += f"RMSE: {fit_results['meta']['rmse']:.3f} mOD\n"
             fitting_print += f"MEA: {fit_results['meta']['mea']:.3f} mOD\n"
             fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['n_eff']:.0f} (effective)\n"
             fitting_print += f"eff residual var: {fit_results['meta']['var_resid_eff']:.2f}\n"

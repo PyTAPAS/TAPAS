@@ -470,40 +470,42 @@ class Converter:
         string = string.replace(" ", "")
         if string == "":
             return None
-        if string == "inf":
+        elif string.lower() == "inf":
             return np.inf
-        if string == "-inf":
+        elif string.lower() == "-inf":
             return -np.inf
-
-        if re.search(r"fm|fs", string):
-            string = re.sub(r"fm|fs", "", string)
-            return float(string) * 1e-15
-        elif re.search(r"pm|ps", string):
-            string = re.sub(r"pm|ps", "", string)
-            return float(string) * 1e-12
-        elif re.search(r"nm|ns", string):
-            string = re.sub(r"nm|ns", "", string)
-            return float(string) * 1e-9
-        elif re.search(r"um|us|µm|µs", string):
-            string = re.sub(r"um|us|µm|µs", "", string)
-            return float(string) * 1e-6
-        elif re.search(r"mm|ms", string):
-            string = re.sub(r"mm|ms", "", string)
-            return float(string) * 1e-3
-        elif re.search(r"cm", string):
-            string = re.sub(r"cm", "", string)
-            return float(string) * 1e-2
-        elif re.search(r"in|\"", string):
-            string = re.sub(r"in|\"", "", string)
-            return float(string) * 0.0254
         elif string == "True" or string == "true":
             return True
         elif string == 'False' or string == "false":
             return False
-        else:
-            return float(string)
-        # except ValueError:
-        #     raise ValueError
+
+        match = re.match(r"^([+-]?[0-9]*\.?[0-9]+(?:e[+-]?[0-9]+)?)([a-zA-Zµ\"]*)$", string)
+        if not match:
+            raise ValueError
+
+        num_str, unit_str = match.groups()
+
+        units = {
+            "fs": 1e-15, "fm": 1e-15,
+            "ps": 1e-12, "pm": 1e-12,
+            "ns": 1e-9,  "nm": 1e-9,
+            "us": 1e-6,  "um": 1e-6, "µs": 1e-6, "µm": 1e-6,
+            "ms": 1e-3,  "mm": 1e-3,
+            "cm": 1e-2,
+            "in": 0.0254, "\"": 0.0254,
+            "s": 1.0, "m": 1.0,
+            "": 1.0
+        }
+        try:
+            value = float(num_str)
+        except ValueError:
+            raise ValueError
+
+        multiplier = units.get(unit_str.lower(), None)
+        if multiplier is None:
+            raise ValueError
+
+        return value * multiplier
 
     def convert_str_input2list(string: str) -> list[float]:
         string = re.sub(r"\s|\(|\)|\[|\]", "", string)
@@ -548,6 +550,23 @@ class Converter:
             darkened_colors.append(colorsys.hls_to_rgb(h, new_l, s))
 
         return darkened_colors
+    
+    def components_colorlist(base_color : str, number : int) ->list[str]:
+        variants = []
+        try:
+            color = mcolors.cnames[base_color]
+        except KeyError:
+            pass  # Assume color is already in hex or another valid format
+
+        rgb = mcolors.to_rgb(color)
+        # Convert RGB to HLS (Hue, Lightness, Saturation)
+        h, l, s = colorsys.rgb_to_hls(*rgb)
+        levels = np.linspace(l, 1.0, number + 1)[:-1]
+        for li in levels:
+            r, g, b = colorsys.hls_to_rgb(h, li, s)
+            variants.append(mcolors.to_hex((r, g, b)))
+
+        return variants
 
     def offset_corr(ydata: NDArray) -> NDArray:
         ydata = ydata - min(ydata)

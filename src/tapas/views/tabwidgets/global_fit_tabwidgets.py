@@ -64,9 +64,9 @@ class InputWidget(QWidget):
         self.le_linlog = QLineEdit(self, placeholderText=msg.Widgets.i07)
         self.le_linlog.setToolTip(msg.ToolTips.t22)
         self.le_linlog.setMaximumWidth(50)
-        self.check_normalize = QCheckBox('normalize DAS/EAS/SAS')
+        self.check_normalize = QCheckBox('Normalize DAS/EAS/SAS')
         self.check_normalize.setToolTip(msg.ToolTips.t116)
-        self.check_normalized_resid = QCheckBox('Percent residuals')
+        self.check_normalized_resid = QCheckBox('Percent Residuals')
         self.check_normalized_resid.setToolTip(msg.ToolTips.t117)
 
         self.w_view_manipulations_layout = QGridLayout()
@@ -81,20 +81,26 @@ class InputWidget(QWidget):
         self.w_fit_params = QGroupBox("Fitting Parameters")
         self.sb_components = QSpinBox(minimum=1, maximum=9, value=1)
         self.check_infinte = QCheckBox("Infinite Component?")
-        self.check_gs = QCheckBox("explicit GSB")
-        self.gs_use_ss_abs = QCheckBox("use steady-state")
+        self.check_gs = QCheckBox("Explicit GSB")
+        self.gs_use_ss_abs = QCheckBox("Use Steady-State")
         self.gs_use_ss_abs.setEnabled(False)
+        self.label_ca = QLabel("Fit CA")
+        self.label_ca.setToolTip(msg.ToolTips.t139)
+        self.cb_ca_order = QComboBox()
+        self.cb_ca_order.addItems(['false','zero order', 'zero + 1st order'])
+        self.cb_ca_order.setToolTip(msg.ToolTips.t140)
 
         self.cb_model = QComboBox()
         self.cb_model.addItems(
-            ['parallel', 'sequential', '2C_3k_1', '3C_5k_1', '3C_4k_1', '4C_6k_1'])
+            ['parallel', 'sequential', '2C_3k_1', '3C_5k_1', '3C_4k_1', '4C_6k_1', ])
+        
         self.sp_substeps = QSpinBox(minimum=1, maximum=100, value=6)
         self.cb_t0_def = QComboBox()
         self.cb_t0_def.addItems(['5% Threshold', 'Gaussian Center'])
         self.cb_method = QComboBox()
         self.cb_method.addItems(['nelder', 'leastsq', 'diff-evol'])
         self.pb_fit = QPushButton("Fit")
-        self.pb_show_guess = QPushButton('show initial guess')
+        self.pb_show_guess = QPushButton('Show Initial Guess')
         self.w_fit_params_layout = QGridLayout()
 
         self.w_model_preview = QGroupBox("Model Preview")
@@ -110,19 +116,21 @@ class InputWidget(QWidget):
         self.label_microsteps = QLabel("Microsteps")
         self.sp_substeps.setVisible(False)
         self.label_microsteps.setVisible(False)
-        self.w_fit_params_layout.addWidget(QLabel("# Lifetimes"), 1, 0, )
+        self.w_fit_params_layout.addWidget(QLabel("# Components"), 1, 0, )
         self.w_fit_params_layout.addWidget(self.sb_components, 1, 1, )
         self.w_fit_params_layout.addWidget(self.check_infinte, 2, 0, 1, 2)
         self.w_fit_params_layout.addWidget(self.check_gs, 3, 0)
         self.w_fit_params_layout.addWidget(self.gs_use_ss_abs, 3, 1)
-        self.w_fit_params_layout.addWidget(QLabel("Model"), 4, 0, )
-        self.w_fit_params_layout.addWidget(self.cb_model, 4, 1, )
-        self.w_fit_params_layout.addWidget(self.label_microsteps, 5, 0, )
-        self.w_fit_params_layout.addWidget(self.sp_substeps, 5, 1, )
-        self.w_fit_params_layout.addWidget(QLabel("time zero"), 6, 0, )
-        self.w_fit_params_layout.addWidget(self.cb_t0_def, 6, 1, )
-        self.w_fit_params_layout.addWidget(QLabel("Method"), 7, 0, )
-        self.w_fit_params_layout.addWidget(self.cb_method, 7, 1, )
+        self.w_fit_params_layout.addWidget(self.label_ca, 4, 0, )
+        self.w_fit_params_layout.addWidget(self.cb_ca_order, 4, 1, )
+        self.w_fit_params_layout.addWidget(QLabel("Model"), 5, 0, )
+        self.w_fit_params_layout.addWidget(self.cb_model, 5, 1, )
+        self.w_fit_params_layout.addWidget(self.label_microsteps, 6, 0, )
+        self.w_fit_params_layout.addWidget(self.sp_substeps, 6, 1, )
+        self.w_fit_params_layout.addWidget(QLabel("Time Zero"), 7, 0, )
+        self.w_fit_params_layout.addWidget(self.cb_t0_def, 7, 1, )
+        self.w_fit_params_layout.addWidget(QLabel("Method"), 8, 0, )
+        self.w_fit_params_layout.addWidget(self.cb_method, 8, 1, )
 
         self.sb_weights1_min = QSpinBox(suffix=' nm')
         self.sb_weights1_min.setEnabled(False)
@@ -187,23 +195,23 @@ class InputWidget(QWidget):
         self.container4.hide()
         self.container5.hide()
 
-        self.w_fit_params_layout.addWidget(QLabel("Weights"), 8, 0, )
-        self.w_fit_params_layout.addWidget(self.container1, 9, 0, 1, 2)
-        self.w_fit_params_layout.addWidget(self.container2, 10, 0, 1, 2)
-        self.w_fit_params_layout.addWidget(self.container3, 11, 0, 1, 2)
-        self.w_fit_params_layout.addWidget(self.container4, 12, 0, 1, 2)
-        self.w_fit_params_layout.addWidget(self.container5, 13, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(QLabel("Weights"), 9, 0, )
+        self.w_fit_params_layout.addWidget(self.container1, 10, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(self.container2, 11, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(self.container3, 12, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(self.container4, 13, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(self.container5, 14, 0, 1, 2)
 
-        self.w_fit_params_layout.addWidget(self.pb_show_guess, 15, 0, )
-        self.w_fit_params_layout.addWidget(self.pb_fit, 15, 1, 1, 2)
+        self.w_fit_params_layout.addWidget(self.pb_show_guess, 16, 0, )
+        self.w_fit_params_layout.addWidget(self.pb_fit, 16, 1, 1, 2)
 
         self.w_fit_params.setLayout(self.w_fit_params_layout)
         self.sb_components.valueChanged.connect(self.update_tab_fit_params)
 
         self.tab_fit_params = QTableWidget(self)
 
-        self.component_labels = ['t0', 'IRF', 't1',
-                                 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9']
+        self.component_labels = ['t0', 'IRF', 'τ1',
+                                 'τ2', 'τ3', 'τ4', 'τ5', 'τ6', 'τ7', 'τ8', 'τ9']
         self.tab_fit_params.setColumnCount(4)
         self.tab_fit_params.setMinimumHeight(150)
         header = self.tab_fit_params.horizontalHeader()
@@ -217,7 +225,7 @@ class InputWidget(QWidget):
         self.tab_fit_params.setRowCount(3)
         self.tab_fit_params.setVerticalHeaderLabels(self.component_labels[:])
 
-        self.w_fit_params_layout.addWidget(self.tab_fit_params, 14, 0, 1, 2)
+        self.w_fit_params_layout.addWidget(self.tab_fit_params, 15, 0, 1, 2)
 
         self.sb_components.setToolTip(msg.ToolTips.t105)
         self.check_infinte.setToolTip(msg.ToolTips.t106)
@@ -230,6 +238,7 @@ class InputWidget(QWidget):
         self.check_gs.setToolTip(msg.ToolTips.t113)
         self.gs_use_ss_abs.setToolTip(msg.ToolTips.t114)
         self.container1.setToolTip(msg.ToolTips.t115)
+        self.sp_substeps.setToolTip(msg.ToolTips.t125)
 
         self.layout = QVBoxLayout(self)
         self.setLayout(self.layout)
@@ -352,7 +361,7 @@ class ResultsWidget(QWidget):
         self.te_results = QTextEdit()
         self.te_results.setReadOnly(True)
         self.te_results.setMinimumHeight(250)
-        self.pb_save_fit = QPushButton('Save Fit to dataset')
+        self.pb_save_fit = QPushButton('Save Fit to Dataset')
 
         self.w_results_output_layout = QGridLayout()
         self.w_results_output_layout.addWidget(self.te_results, 0, 0)
@@ -364,17 +373,17 @@ class ResultsWidget(QWidget):
         self.tab_ds_fits = QTableWidget(self)
 
         self.component_labels = ['model', 'r2', 'Ainf', 't0', 'IRF',
-                                 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9']
+                                 'τ1', 'τ2', 'τ3', 'τ4', 'τ5', 'τ6', 'τ7', 'τ8', 'τ9']
         self.tab_ds_fits.setColumnCount(1)
         self.header = self.tab_ds_fits.horizontalHeader()
-        self.tab_ds_fits.setHorizontalHeaderLabels(['fit'])
+        self.tab_ds_fits.setHorizontalHeaderLabels(['Fit'])
         self.header.setSectionResizeMode(
             0, QHeaderView.ResizeMode.ResizeToContents)
 
         self.tab_ds_fits.setRowCount(5)
         self.tab_ds_fits.setVerticalHeaderLabels(self.component_labels)
 
-        self.pb_delete_fit = QPushButton('delete selected fit')
+        self.pb_delete_fit = QPushButton('Delete Selected Fit')
         self.w_fitting_list_layout.addWidget(self.tab_ds_fits, 0, 0)
         self.w_fitting_list_layout.addWidget(self.pb_delete_fit, 1, 0)
         self.w_fitting_list.setLayout(self.w_fitting_list_layout)
@@ -401,7 +410,7 @@ class ResultsWidget(QWidget):
 
         self.w_results_posterior_layout = QGridLayout()
         self.w_results_posterior_layout.addWidget(
-            QLabel('Discard the first'), 0, 0)
+            QLabel('Discard the First'), 0, 0)
         self.w_results_posterior_layout.addWidget(self.sb_burn, 0, 1)
         self.w_results_posterior_layout.addWidget(QLabel('Initialize'), 1, 0)
         self.w_results_posterior_layout.addWidget(self.sb_init, 1, 1)

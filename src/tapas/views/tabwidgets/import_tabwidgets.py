@@ -28,13 +28,14 @@ from ...configurations import messages as msg
 class ImportWidget(QWidget):
 
     def __init__(self, label="Data", placeholder="Enter Data Path...",
-                 time_unit=False, energy_unit=False, delA_unit=False):
+                 time_unit=False, energy_unit=False, delA_unit=False, matrix_orientation=False):
         super().__init__()
         self.placeholder = placeholder
         self.label = label
         self.time_unit = time_unit
         self.energy_unit = energy_unit
         self.delA_unit = delA_unit
+        self.matrix_orientation = matrix_orientation
 
         self.initUI()
 
@@ -67,9 +68,9 @@ class ImportWidget(QWidget):
         self.w_header_layout.addWidget(QLabel('Ignore Header', self))
         self.w_header_layout.addWidget(self.sb_header)
 
-        self.pb_load = QPushButton("load data")
+        self.pb_load = QPushButton("Load Data")
         self.pb_load.setToolTip(msg.ToolTips.t15)
-        self.pb_clear = QPushButton("clear")
+        self.pb_clear = QPushButton("Clear")
         self.pb_clear.setToolTip(msg.ToolTips.t16)
 
         # add Widgets to Layout
@@ -80,8 +81,8 @@ class ImportWidget(QWidget):
         self.layout.addWidget(self.pb_browse, 0, 2)
         self.layout.addWidget(self.w_delimiter, 0, 3)
         self.layout.addWidget(self.w_header, 0, 4)
-        self.layout.addWidget(self.pb_load, 0, 8)
-        self.layout.addWidget(self.pb_clear, 0, 9)
+        self.layout.addWidget(self.pb_load, 0, 9)
+        self.layout.addWidget(self.pb_clear, 0, 10)
 
         self.layout.setColumnStretch(0, 0)
         self.layout.setColumnStretch(1, 2)
@@ -90,6 +91,7 @@ class ImportWidget(QWidget):
         self.layout.setColumnStretch(4, 0)
         self.layout.setColumnStretch(6, 0)
         self.layout.setColumnStretch(7, 0)
+        self.layout.setColumnStretch(8, 0)
 
         if self.time_unit:
             self.w_time_unit = QWidget()
@@ -98,7 +100,7 @@ class ImportWidget(QWidget):
             self.cb_time_unit.addItems(('ps', 'ns', 'us', 'ms', 's'))
             self.w_time_unit_layout = QVBoxLayout()
             self.w_time_unit.setLayout(self.w_time_unit_layout)
-            self.w_time_unit_layout.addWidget(QLabel('Time unit', self))
+            self.w_time_unit_layout.addWidget(QLabel('Time Unit', self))
             self.w_time_unit_layout.addWidget(self.cb_time_unit)
             self.layout.addWidget(self.w_time_unit, 0, 5)
 
@@ -109,7 +111,7 @@ class ImportWidget(QWidget):
             self.cb_energy_unit.addItems((['nm', 'm']))
             self.w_energy_unit_layout = QVBoxLayout()
             self.w_energy_unit.setLayout(self.w_energy_unit_layout)
-            self.w_energy_unit_layout.addWidget(QLabel('Energy unit', self))
+            self.w_energy_unit_layout.addWidget(QLabel('Energy Unit', self))
             self.w_energy_unit_layout.addWidget(self.cb_energy_unit)
             self.layout.addWidget(self.w_energy_unit, 0, 6)
 
@@ -120,9 +122,22 @@ class ImportWidget(QWidget):
             self.cb_delA_unit.addItems((['OD', 'mOD']))
             self.w_delA_unit_layout = QVBoxLayout()
             self.w_delA_unit.setLayout(self.w_delA_unit_layout)
-            self.w_delA_unit_layout.addWidget(QLabel('DelA unit', self))
+            self.w_delA_unit_layout.addWidget(QLabel('ΔA Unit', self))
             self.w_delA_unit_layout.addWidget(self.cb_delA_unit)
             self.layout.addWidget(self.w_delA_unit, 0, 7)
+        
+        if self.matrix_orientation:
+            self.w_matrix_orientation = QWidget()
+            self.w_matrix_orientation.setToolTip(msg.ToolTips.t126)
+            self.cb_matrix_orientation = QComboBox(self)
+            self.cb_matrix_orientation.addItems((['λ in column', 'λ in row']))
+            self.w_matrix_orientation_layout = QVBoxLayout()
+            self.w_matrix_orientation.setLayout(self.w_matrix_orientation_layout)
+            self.w_matrix_orientation_layout.addWidget(QLabel('Data Orientation', self))
+            self.w_matrix_orientation_layout.addWidget(self.cb_matrix_orientation)
+            self.layout.addWidget(self.w_matrix_orientation, 0, 8)
+
+            
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():

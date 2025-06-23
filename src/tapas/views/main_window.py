@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu('Help')
         help_menu.addAction(self.documentation_action)
         help_menu.addAction(self.online_sourcecode_action)
-        help_menu.addAction(self.online_screencast_action)
+        # help_menu.addAction(self.online_screencast_action)
         help_menu.addAction(self.local_sourcecode_action)
         help_menu.addSeparator()
         help_menu.addAction(self.acknowledgements_action)

@@ -1131,6 +1131,7 @@ class PreprocTab(QWidget):
             logger.exception("unknown exception occurred")
             self.preproc_controller.call_statusbar("error", msg.Error.e01)
             return
+        self.ax.set_title('move the crosshair by dragging the middle mouse button')
         self.ax.set_ylabel(msg.Labels.delay)
         self.ax.set_xlabel(msg.Labels.wavelength)
 
@@ -1154,7 +1155,7 @@ class PreprocTab(QWidget):
             True)  # triggers update view
 
         self.ax_delA.set_xlabel(msg.Labels.wavelength)
-        self.ax_delA.set_ylabel(msg.Labels.delay)
+        self.ax_delA.set_ylabel(msg.Labels.delA)
         self.ax_delA.axhline(y=0, color=self.ax.xaxis.label.get_color(
         ), linestyle="--", linewidth=1, zorder=0)
         self.ax_kin.axhline(y=0, color=self.ax.xaxis.label.get_color(
