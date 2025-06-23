@@ -561,13 +561,14 @@ class LocalFitTab(QWidget):
         use_threshold_t0 = True if self.tw_input.cb_t0_def.currentText() == '5% Threshold' else False
         Ainf = self.tw_input.check_infinte.isChecked()
         model = self.tw_input.cb_model.currentText()
+        ca_order = self.tw_input.cb_ca_order.currentIndex()
 
         # -------- requests controller to model the parameters -------------------------------------
         try:
             fit_results = {}
             fit_results['delA_calc'], fit_results['conc'], fit_results['Amp'],  = self.local_fit_controller.model_theta_wrapper(
                 params=params, delay=delay, delA=delA, Ainf=Ainf,  model=model,
-                weights=jnp.array([1]), use_threshold_t0=use_threshold_t0, substeps=10, output=True)
+                weights=jnp.array([1]), use_threshold_t0=use_threshold_t0, substeps=10, ca_order=ca_order, output=True)
             fit_results['opt_params'] = params
             self.tw_results.te_results.setText("Initial fit succeed")
             self.local_fit_controller.call_statusbar("info", msg.Status.s30)
@@ -577,6 +578,10 @@ class LocalFitTab(QWidget):
             return
 
         # -------- caches the results and plots the guess ------------------------------------------
+        fit_results['meta'] = {}
+        fit_results['meta']['components'] = self.local_fit_controller.get_component_labels(
+            model=self.tw_input.cb_model.currentText(), Ainf=self.tw_input.check_infinte.isChecked(),
+            num=self.tw_input.sb_components.value(), ca_order=ca_order, local = True)
         self.fit_results = fit_results
 
         try:
@@ -607,12 +612,13 @@ class LocalFitTab(QWidget):
         Ainf = self.tw_input.check_infinte.isChecked()
         model = self.tw_input.cb_model.currentText()
         method = self.tw_input.cb_method.currentText()
+        ca_order = self.tw_input.cb_ca_order.currentIndex()
 
         # -------- requests controller to model the parameters -------------------------------------
         try:
             optimized_params = self.local_fit_controller.optimize_params(params=params, ds=self.ds,
                                                                          input_wavelength=input_wavelength, wavelength_area=wavelength_area,
-                                                                         Ainf=Ainf, model=model, method=method, use_threshold_t0=use_threshold_t0)
+                                                                         Ainf=Ainf, model=model, method=method, use_threshold_t0=use_threshold_t0, ca_order=ca_order)
         except exc.FittingError:
             self.tw_results.te_results.setText("Fitting did not succeed")
             return
@@ -622,6 +628,7 @@ class LocalFitTab(QWidget):
             fit_results=optimized_params)
         self.tw_results.te_results.setText(fit_results['output'])
         self.local_fit_controller.call_statusbar("info", msg.Status.s31)
+
         self.fit_results = fit_results
         self.plot_data(show_fit=True)
 
@@ -748,21 +755,18 @@ class LocalFitTab(QWidget):
         if show_fit:
             if self.fit_results:
                 if 'delA_calc' in self.fit_results:
-                    
+                    labels = self.fit_results['meta']['components']
+                    labels_tex = [f'${label}$' for label in labels]
+
                     ax1.plot(delay, self.fit_results['delA_calc'],
                              color=fit_colorlist[0], alpha=1, label='fit', zorder=2)
-        
+
                     # plotting conc only makes sense if more than 1 comp
                     if self.fit_results['conc'].shape[1] >= 2:
-                        for i in range((self.fit_results['conc'].shape[1] - 1)):
+                        for i in range((self.fit_results['conc'].shape[1])):
                             ax1.plot(delay, self.fit_results['conc'][:, i] *
-                                     self.fit_results['Amp'][i], '--', label=f'Comp {i + 1}')
-                        if self.tw_input.check_infinte.isChecked():
-                            ax1.plot(delay, self.fit_results['conc'][:, -1] *
-                                     self.fit_results['Amp'][-1], '--', label='inf Comp')
-                        else:
-                            ax1.plot(delay, self.fit_results['conc'][:, -1] * self.fit_results['Amp']
-                                     [-1], '--', label=f"Comp {self.fit_results['conc'].shape[1]}")
+                                     self.fit_results['Amp'][i], '--', label=labels_tex[i])
+
                     ax2 = axs[1]
                     ax2.plot(
                         delay,  delA - self.fit_results['delA_calc'], 'b', label='residuals')

@@ -31,7 +31,7 @@ import re
 from PyQt6.QtWidgets import QApplication, QMessageBox, QSplashScreen
 
 # PyQt6 Imports
-from PyQt6.QtCore import Qt,   QByteArray, QSize
+from PyQt6.QtCore import Qt, QTimer, QByteArray, QSize, QRunnable, QThreadPool, QObject, pyqtSignal
 from PyQt6.QtGui import (
     QIcon,
     QPalette,
@@ -39,6 +39,7 @@ from PyQt6.QtGui import (
     QPainter
 )
 from PyQt6.QtSvg import QSvgRenderer
+from .configurations import messages as msg
 
 
 def resource_path(*parts: str) -> Path:
@@ -123,6 +124,34 @@ def load_svg_icon(path: str, color: str) -> QIcon:
     return QIcon(pixmap)
 
 
+class PreloadWorker(QRunnable):
+    ''' preload the heavy modules '''
+    class Signals(QObject):
+        finished = pyqtSignal()
+
+    def __init__(self):
+        super().__init__()
+        self.signals = PreloadWorker.Signals()
+
+    def run(self):
+        from .models.model import AbsModel, EmModel, TAModel, TAModel_ds
+        from .controllers.import_controller import ImportController
+        from .controllers.preproc_controller import PreprocController
+        from .controllers.main_controller import MainController
+        from .controllers.visualize_controller import VisualizeController
+        from .controllers.combine_controller import CombineController
+        from .controllers.local_fit_controller import LocalFitController
+        from .controllers.component_controller import ComponentController
+        from .controllers.global_fit_controller import GlobalFitController
+        from .views.main_window import MainWindow
+        import jax.numpy
+        import jaxlib.xla_client
+        import scipy.signal
+        import lmfit
+
+        self.signals.finished.emit()
+
+
 class App(QApplication):
 
     def __init__(self, sys_argv):
@@ -131,7 +160,7 @@ class App(QApplication):
     def load_main_window(self):
         ''' main GUI load after initial Splash screen '''
 
-        # -------- import models, controllers and views --------------------------------------------
+        # -------- lookup preloaded models, controllers and views --------------------------------------------
         from .models.model import AbsModel, EmModel, TAModel, TAModel_ds
         from .controllers.import_controller import ImportController
         from .controllers.preproc_controller import PreprocController
@@ -190,25 +219,42 @@ class App(QApplication):
 def run():
     """Entry point for launching the GUI."""
     sys.excepthook = global_exception_handler
-
     app = App(sys.argv)
 
-    splash_image_path = (resource_path("assets") / 'splash.png')
-    splash_pix = QPixmap(str(splash_image_path))
-    splash_pix = splash_pix.scaled(400, 400,
-                                   Qt.AspectRatioMode.IgnoreAspectRatio,
-                                   Qt.TransformationMode.SmoothTransformation)
+    splash_image_path = resource_path("assets", "splash.png")
+    pix = QPixmap(str(splash_image_path)).scaled(400, 400,
+                                                 Qt.AspectRatioMode.IgnoreAspectRatio,
+                                                 Qt.TransformationMode.SmoothTransformation)
 
-    splash = QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
+    splash = QSplashScreen(pix, Qt.WindowType.WindowStaysOnTopHint)
+    splash.setFont(app.font())
     splash.show()
 
-    app.processEvents()
-    app.load_main_window()
+    messages = msg.Status.s_splash
+    msg_idx = 0
 
-    splash.finish(app.main_window)
+    def advance_message():
+        nonlocal msg_idx
+        if msg_idx < len(messages):
+            splash.showMessage(
+                messages[msg_idx],
+                Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignBottom,
+                Qt.GlobalColor.black
+            )
+            msg_idx += 1
+            QTimer.singleShot(2000, advance_message)
+
+    advance_message()
+
+    worker = PreloadWorker()
+    worker.signals.finished.connect(lambda: on_preload_done())
+    QThreadPool.globalInstance().start(worker)
+
+    def on_preload_done():
+        app.load_main_window()
+        splash.finish(app.main_window)
 
     sys.exit(app.exec())
-
 
 
 if __name__ == '__main__':

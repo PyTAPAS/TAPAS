@@ -675,6 +675,7 @@ class GlobalFitTab(QWidget):
                 self.global_fit_controller.call_statusbar("error", msg.Error.e46)
                 return
         Ainf = self.tw_input.check_infinte.isChecked()
+        ca_order = self.tw_input.cb_ca_order.currentIndex()
 
         # -------- requests controller to model the parameters -------------------------------------
         try:
@@ -683,23 +684,23 @@ class GlobalFitTab(QWidget):
             if self.tw_input.cb_model.currentText() == 'sequential':
                 fit_results['delA_calc'], fit_results['conc'], fit_results['EAS'],  = self.global_fit_controller.model_theta_wrapper(
                     params=params, delay=delay, delA=delA, Ainf=Ainf,  model='sequential',
-                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec, output=True)
+                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order, output=True)
                 _, _, fit_results['DAS'] = self.global_fit_controller.model_theta_wrapper(
                     params=params, delay=delay, delA=delA, Ainf=Ainf,  model='parallel',
-                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec, output=True)
+                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order, output=True)
 
             elif self.tw_input.cb_model.currentText() == 'parallel':
                 fit_results['delA_calc'], fit_results['conc'], fit_results['DAS'],  = self.global_fit_controller.model_theta_wrapper(
                     params=params, delay=delay, delA=delA, Ainf=Ainf,  model='parallel',
-                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec, output=True)
+                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order, output=True)
                 _, _, fit_results['EAS'] = self.global_fit_controller.model_theta_wrapper(
                     params=params, delay=delay, delA=delA, Ainf=Ainf,  model='sequential',
-                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec, output=True)
+                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order, output=True)
 
             else:
                 fit_results['delA_calc'], fit_results['conc'], fit_results['SAS'],  = self.global_fit_controller.model_theta_wrapper(
                     params=params, delay=delay, delA=delA, Ainf=Ainf,  model=self.tw_input.cb_model.currentText(),
-                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec, output=True)
+                    weights=weight_dummy, use_threshold_t0=use_threshold_t0, substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order, output=True)
 
             fit_results['opt_params'] = params
             self.tw_results.te_results.setText("Initial fit succeed")
@@ -716,7 +717,7 @@ class GlobalFitTab(QWidget):
         fit_results['meta']['model'] = self.tw_input.cb_model.currentText()
         fit_results['meta']['components'] = self.global_fit_controller.get_component_labels(
             model=self.tw_input.cb_model.currentText(), Ainf=self.tw_input.check_infinte.isChecked(),
-            num=self.tw_input.sb_components.value(), gs=self.tw_input.check_gs.isChecked())
+            num=self.tw_input.sb_components.value(), gs=self.tw_input.check_gs.isChecked(),ca_order= ca_order)
         self.fit_results = fit_results
         try:
             self.plot_fit()
@@ -765,6 +766,7 @@ class GlobalFitTab(QWidget):
         Ainf = self.tw_input.check_infinte.isChecked()
         model = self.tw_input.cb_model.currentText()
         method = self.tw_input.cb_method.currentText()
+        ca_order = self.tw_input.cb_ca_order.currentIndex()
 
         # -------- requests controller to model the parameters -------------------------------------
         try:
@@ -772,7 +774,7 @@ class GlobalFitTab(QWidget):
                                                                           Ainf=Ainf, model=model,
                                                                           method=method, weights=weights_vector,
                                                                           use_threshold_t0=use_threshold_t0,
-                                                                          substeps=substeps, gs=gs, gs_spec=gs_spec,)
+                                                                          substeps=substeps, gs=gs, gs_spec=gs_spec,ca_order=ca_order)
         except exc.FittingError:
             self.tw_results.te_results.setText("Fitting did not succeed")
             self.fit_results = None
@@ -877,7 +879,7 @@ class GlobalFitTab(QWidget):
             self.ax_Vh.set_title("SVD of Residuals")
             self.ax_conc.set_title("Concentrations")
             self.ax_delA_calc.set_title("Calculated Matrix")
-            self.ax_res.set_title("Errors")
+            self.ax_res.set_title("Residuals")
             self.ax_delA_calc.xaxis.set_major_formatter(self.sc.nm_formatter_ax)
             self.ax_delA_calc.yaxis.set_major_formatter(self.sc.delay_formatter0)
             self.ax_res.xaxis.set_major_formatter(self.sc.nm_formatter_ax)

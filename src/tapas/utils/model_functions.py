@@ -36,6 +36,23 @@ class ModelFunctions:
         return fwhm / 2.35482
 
     @staticmethod
+    def _gaussian_irf(t: jnp.ndarray, t0: float, fwhm: float) -> jnp.ndarray:
+        σ = ModelFunctions._sigma(fwhm)
+        return jnp.exp(-0.5 * ((t - t0) / σ) ** 2)          # peak ≈ 1
+
+    @staticmethod
+    def _irf_derivative(t: jnp.ndarray, t0: float, fwhm: float) -> jnp.ndarray:
+        g = ModelFunctions._gaussian_irf(t, t0, fwhm)
+        σ = ModelFunctions._sigma(fwhm)
+        return -(t - t0) / σ**2 * g                         # peak ≈ 1/e
+
+    @staticmethod
+    def _irf_second_derivative(t: jnp.ndarray, t0: float, fwhm: float) -> jnp.ndarray:
+        g = ModelFunctions._gaussian_irf(t, t0, fwhm)
+        σ = ModelFunctions._sigma(fwhm)
+        return ((t - t0)**2 / σ**4 - 1/σ**2) * g
+
+    @staticmethod
     def _gaussian_pdf(t: jnp.ndarray, t0: float, fwhm: float) -> jnp.ndarray:
         '''
         Gaussian probability density function (PDF).
@@ -229,9 +246,9 @@ class ModelFunctions:
         return c_final, c_final
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_parallel(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
-                       weights: jnp.ndarray, gs: bool, use_bleach: bool,  gs_spec: jnp.ndarray,
+                       weights: jnp.ndarray, gs: bool, use_bleach: bool,  gs_spec: jnp.ndarray, ca_order: int,
                        output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: Parallel convolution and optional ground-state/bleach fitting.
@@ -303,10 +320,24 @@ class ModelFunctions:
             cinf = ModelFunctions._gaussian_cdf(delay, t0=t0, fwhm=irf)
             c = jnp.concatenate([c, cinf[:, None]], axis=1)
 
+        σ = ModelFunctions._sigma(irf)
+
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+
+        c = jnp.concatenate([ca_cols, c], axis=1)
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)
@@ -328,7 +359,7 @@ class ModelFunctions:
 
         # -------- fit amplitudes & build residuals ------------------------------------------------
         else:
-            eps, *_ = jnp.linalg.lstsq(c, delA, rcond=1e-6)
+            eps, *_ = jnp.linalg.lstsq(c, delA, rcond=1e-3)
             delA_cal = c @ eps
 
         resid = (delA - delA_cal) * jnp.sqrt(weights)
@@ -338,10 +369,10 @@ class ModelFunctions:
         return resid.ravel()
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_sequential(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
                          weights: jnp.ndarray, substeps: int, gs: bool, use_bleach: bool,
-                         gs_spec: jnp.ndarray, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+                         gs_spec: jnp.ndarray, ca_order: int, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: sequential kinetic pools via micro–RK4 integration over each time interval
 
@@ -422,12 +453,25 @@ class ModelFunctions:
                           t0=t0, irf=irf, kinetics_fn=kinetics)
 
         _, c_hist = lax.scan(scan_fn, c0, intervals)          # (N-1,npool)
-        c = jnp.vstack([c0, c_hist])                                # (N,npool)
+        c = jnp.vstack([c0, c_hist])
+
+        σ = ModelFunctions._sigma(irf)
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+        c = jnp.concatenate([ca_cols, c], axis=1)
 
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)
@@ -459,10 +503,10 @@ class ModelFunctions:
         return resid.ravel()
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf',  'substeps', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf',  'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_2C_3k_1(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
                       weights: jnp.ndarray, substeps: int, gs: bool, use_bleach: bool,
-                      gs_spec: jnp.ndarray, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+                      gs_spec: jnp.ndarray, ca_order: int, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: target kinetic pools via micro–RK4 integration over each time interval
 
@@ -520,7 +564,6 @@ class ModelFunctions:
 
         # ---------- kinetics ----------------------------------------------------------------------
         def kinetics(c, g):
-            # c = [A, B, (C)]   depending on Ainf
             A = c[0]
             B = c[1]
             dA = g - (k1 + k3) * A
@@ -540,10 +583,23 @@ class ModelFunctions:
         _, c_hist = lax.scan(scan_fn, c0, intervals)          # (N-1,npool)
         c = jnp.vstack([c0, c_hist])                                # (N,npool)
 
+        σ = ModelFunctions._sigma(irf)
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+        c = jnp.concatenate([ca_cols, c], axis=1)
+
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)
@@ -575,10 +631,10 @@ class ModelFunctions:
         return resid.ravel()
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_3C_5k_1(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
                       weights: jnp.ndarray, substeps: int, gs: bool, use_bleach: bool,
-                      gs_spec: jnp.ndarray, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+                      gs_spec: jnp.ndarray, ca_order: int, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: target kinetic pools via micro–RK4 integration over each time interval
 
@@ -638,7 +694,6 @@ class ModelFunctions:
 
         # ---------- kinetics ----------------------------------------------------------------------
         def kinetics(c, g):
-            # c = [A, B, C (GS)]   depending on Ainf
             A = c[0]
             B = c[1]
             C = c[2]
@@ -662,10 +717,23 @@ class ModelFunctions:
         _, c_hist = lax.scan(scan_fn, c0, intervals)          # (N-1,npool)
         c = jnp.vstack([c0, c_hist])                                # (N,npool)
 
+        σ = ModelFunctions._sigma(irf)
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+        c = jnp.concatenate([ca_cols, c], axis=1)
+
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)
@@ -697,10 +765,10 @@ class ModelFunctions:
         return resid.ravel()
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_3C_4k_1(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
                       weights: jnp.ndarray, substeps: int, gs: bool, use_bleach: bool,
-                      gs_spec: jnp.ndarray, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+                      gs_spec: jnp.ndarray, ca_order: int, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: target kinetic pools via micro–RK4 integration over each time interval
 
@@ -749,7 +817,7 @@ class ModelFunctions:
             - c_matrix : (N, npool) convolution basis (EMG [+ Ainf + GS if used])
             - amplitudes : (λ, npool) fitted amplitudes and (optional) bleach weights
         '''
-        
+
         # ---------- parameters --------------------------------------------------------------------
         t0, irf = theta[0],  theta[1]
         k1, k2, k3, k4, = 1.0 / theta[2:-2] if use_bleach else 1 / theta[2:]
@@ -759,7 +827,6 @@ class ModelFunctions:
 
         # ---------- kinetics ----------------------------------------------------------------------
         def kinetics(c, g):
-            # c = [A, B, C (GS)]   depending on Ainf
             A = c[0]
             B = c[1]
             C = c[2]
@@ -783,10 +850,23 @@ class ModelFunctions:
         _, c_hist = lax.scan(scan_fn, c0, intervals)          # (N-1,npool)
         c = jnp.vstack([c0, c_hist])                                # (N,npool)
 
+        σ = ModelFunctions._sigma(irf)
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+        c = jnp.concatenate([ca_cols, c], axis=1)
+
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)
@@ -818,10 +898,10 @@ class ModelFunctions:
         return resid.ravel()
 
     @staticmethod
-    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'output'))
+    @partial(jit, static_argnames=('Ainf', 'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
     def model_4C_6k_1(theta: jnp.ndarray, delay: jnp.ndarray, delA: jnp.ndarray, Ainf: bool,
                       weights: jnp.ndarray, substeps: int, gs: bool, use_bleach: bool,
-                      gs_spec: jnp.ndarray, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
+                      gs_spec: jnp.ndarray, ca_order: int, output: bool) -> jnp.ndarray | tuple[jnp.ndarray, jnp.ndarray, jnp.ndarray]:
         '''
         Objective function to be minimized: target kinetic pools via micro–RK4 integration over each time interval
 
@@ -882,7 +962,6 @@ class ModelFunctions:
 
         # ---------- kinetics ----------------------------------------------------------------------
         def kinetics(c, g):
-            # c = [A, B, C (GS)]   depending on Ainf
             A = c[0]
             B = c[1]
             C = c[2]
@@ -907,11 +986,24 @@ class ModelFunctions:
 
         _, c_hist = lax.scan(scan_fn, c0, intervals)          # (N-1,npool)
         c = jnp.vstack([c0, c_hist])                                # (N,npool)
+        σ = ModelFunctions._sigma(irf)
 
+        if ca_order == 0:
+            ca_cols = jnp.empty((delay.shape[0], 0), delay.dtype)   # (N,0)
+
+        elif ca_order == 1:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)   # (N,)
+            ca_cols = ca_0[:, None]                                 # (N,1)
+
+        elif ca_order == 2:
+            ca_0 = ModelFunctions._gaussian_irf(delay, t0, irf)
+            ca_1 = σ * ModelFunctions._irf_derivative(delay, t0, irf)
+            ca_cols = jnp.stack([ca_0, ca_1], axis=1)
+
+        c = jnp.concatenate([ca_cols, c], axis=1)
         # -------- model explicit ground state -----------------------------------------------------
         if gs:
-            n_excited = c.shape[1]
-            GS = -jnp.sum(c[:, :n_excited], axis=1, keepdims=True)
+            GS = jnp.sum(c[:, ca_order:], axis=1, keepdims=True)
             if use_bleach:
                 lambda_shift, sigma = theta[-2], theta[-1]
                 bleach_vec = ModelFunctions._make_bleach(lambda_shift, sigma, gs_spec)  # (λ,)

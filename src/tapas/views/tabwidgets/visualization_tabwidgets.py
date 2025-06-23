@@ -18,9 +18,9 @@ This file is part of TAPAS.
     along with TAPAS.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt6.QtWidgets import QButtonGroup,  QMenu, QFormLayout, QWidget, QLabel, QLineEdit, QPushButton, QFrame, QComboBox, QVBoxLayout,   QSpinBox, QGridLayout,  QGroupBox,  QRadioButton, QCompleter,  QCheckBox
+from PyQt6.QtWidgets import QButtonGroup,  QMenu, QFormLayout, QFontComboBox, QWidget, QLabel, QLineEdit, QPushButton, QFrame, QComboBox, QVBoxLayout,   QSpinBox, QGridLayout,  QGroupBox,  QRadioButton, QCompleter,  QCheckBox
 from PyQt6.QtCore import Qt,  QRegularExpression
-from PyQt6.QtGui import QIntValidator, QRegularExpressionValidator
+from PyQt6.QtGui import QIntValidator, QRegularExpressionValidator, QFontDatabase, QFont, QStandardItemModel, QStandardItem
 import matplotlib.font_manager as fm
 import logging
 import logging.config
@@ -34,7 +34,7 @@ class Widgets(QWidget):
         widget.setToolTip(msg.ToolTips.t63)
         layout = QGridLayout(widget)
         check_show_info = QCheckBox(
-            "display metadata", objectName='check_show_info')
+            "Display Metadata", objectName='check_show_info')
         layout.addWidget(check_show_info, 0, 0)
         widget.setLayout(layout)
         widget.check_show_info = check_show_info
@@ -60,7 +60,7 @@ class Widgets(QWidget):
         widget.le_xmax_hide2 = QLineEdit(
             placeholderText=msg.Widgets.i11, maximumWidth=50, objectName='le_xmax_hide2')
         layout = QGridLayout()
-        layout.addWidget(QLabel("hide area"), 0, 0)
+        layout.addWidget(QLabel("Hide Area"), 0, 0)
         layout.addWidget(widget.le_xmin_hide, 0, 1)
         layout.addWidget(widget.le_xmax_hide, 0, 2)
         layout.addWidget(widget.le_xmin_hide2, 1, 1)
@@ -119,13 +119,13 @@ class Widgets(QWidget):
             widget.sb_zcenter = QSpinBox(
                 minimum=-100, maximum=100, value=0,  minimumWidth=60, maximumWidth=60, objectName='sb_zcenter')
             widget.sb_zcenter.setToolTip(msg.ToolTips.t66)
-            layout.addWidget(QLabel("wavelength"), 0, 0, 1, 2)
+            layout.addWidget(QLabel("Wavelength"), 0, 0, 1, 2)
             layout.addWidget(widget.le_xmin, 0, 2)
             layout.addWidget(widget.le_xmax, 0, 3)
             layout.addWidget(QLabel("Delay"), 1, 0, 1, 2)
             layout.addWidget(widget.le_ymin, 1, 2)
             layout.addWidget(widget.le_ymax, 1, 3)
-            layout.addWidget(QLabel("del A"), 2, 0)
+            layout.addWidget(QLabel("ΔA"), 2, 0)
             layout.addWidget(widget.sb_zcenter, 2, 1)
             layout.addWidget(widget.le_zmin, 2, 2)
             layout.addWidget(widget.le_zmax, 2, 3)
@@ -133,7 +133,7 @@ class Widgets(QWidget):
             return widget
 
         if not exclude == 'Wavelength':
-            layout.addWidget(QLabel("wavelength"), 0, 0, )
+            layout.addWidget(QLabel("Wavelength"), 0, 0, )
             layout.addWidget(widget.le_xmin, 0, 1)
             layout.addWidget(widget.le_xmax, 0, 2)
         if not exclude == 'Delay':
@@ -143,7 +143,7 @@ class Widgets(QWidget):
             layout.addWidget(widget.cb_yscale, 1, 3)
             layout.addWidget(widget.le_linlog_y, 1, 4)
         if not exclude == 'del A':
-            widget.z_label = QLabel("del A")
+            widget.z_label = QLabel("ΔA")
             layout.addWidget(widget.z_label, 2, 0, )
             layout.addWidget(widget.le_zmin, 2, 1)
             layout.addWidget(widget.le_zmax, 2, 2)
@@ -163,7 +163,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t67)
         widget.check_show_pump = QCheckBox(
-            "display pump", objectName='check_show_pump')
+            "Display Pump", objectName='check_show_pump')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_pump, 0, 0)
         widget.setLayout(layout)
@@ -174,7 +174,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t68)
         widget.check_show_second_ax = QCheckBox(
-            "display 2nd axis", objectName='check_show_second_ax')
+            "Display 2nd Axis", objectName='check_show_second_ax')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_second_ax, 0, 0)
         widget.setLayout(layout)
@@ -185,7 +185,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t69)
         widget.check_show_data = QCheckBox(
-            "show experimental data", objectName='check_show_data')
+            "Show Experimental Data", objectName='check_show_data')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_data, 0, 0)
         widget.setLayout(layout)
@@ -196,7 +196,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t70)
         widget.check_show_residuals = QCheckBox(
-            "show residuals", objectName='check_show_residuals')
+            "Show Residuals", objectName='check_show_residuals')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_residuals, 0, 0)
         widget.setLayout(layout)
@@ -207,7 +207,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t71)
         widget.check_show_legend = QCheckBox(
-            "show legend", objectName='check_show_legend')
+            "Show Legend", objectName='check_show_legend')
         widget.cb_legend_loc = QComboBox(objectName='cb_legend_loc')
         widget.cb_legend_loc.addItems(
             ['outside', 'best', 'upper left', 'upper right', 'lower left', 'lower right'])
@@ -242,7 +242,7 @@ class Widgets(QWidget):
             layout.addWidget(QLabel("Wavelength"), 0, 0, )
             layout.addWidget(widget.le_wavelength_list, 0, 1, 1, 2)
 
-        layout.addWidget(QLabel("colors"), 1, 0,)
+        layout.addWidget(QLabel("Colors"), 1, 0,)
         layout.addWidget(widget.cb_select_cmap, 1, 1)
         layout.addWidget(widget.le_custom_colors, 1, 2)
         widget.setLayout(layout)
@@ -335,14 +335,14 @@ class Widgets(QWidget):
                 QLabel("Lin/Log Transition"), 0, 0, 1, 2,)
             layout.addWidget(widget.le_linlog, 0, 2, 1, 2)
             layout.addWidget(
-                QLabel("ratio (Lin|Log|ss)", ), 1, 0)
+                QLabel("Ratio (Lin|Log|ss)", ), 1, 0)
             layout.addWidget(widget.sb_ss_ratio, 1, 3)
         else:
             layout.addWidget(
                 QLabel("Lin/Log Transition"), 0, 0, )
             layout.addWidget(widget.le_linlog, 0, 1)
             layout.addWidget(
-                QLabel("ratio (Lin|Log)", ), 1, 0)
+                QLabel("Ratio (Lin|Log)", ), 1, 0)
         layout.addWidget(widget.sb_lin_ratio, 1, 1)
         layout.addWidget(widget.sb_log_ratio, 1, 2)
         widget.setLayout(layout)
@@ -370,7 +370,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t83)
         widget.check_show_delA_cuts = QCheckBox(
-            "display delA Cuts", objectName='check_show_delA_cuts')
+            "Display ΔA Cuts", objectName='check_show_delA_cuts')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_delA_cuts, 0, 0)
         widget.setLayout(layout)
@@ -381,7 +381,7 @@ class Widgets(QWidget):
         widget = QWidget()
         widget.setToolTip(msg.ToolTips.t83)
         widget.check_show_kin_cuts = QCheckBox(
-            "display kinetic Cuts", objectName='check_show_kin_cuts')
+            "Display Kinetic Cuts", objectName='check_show_kin_cuts')
         layout = QGridLayout()
         layout.addWidget(widget.check_show_kin_cuts, 0, 0)
         widget.setLayout(layout)
@@ -462,7 +462,7 @@ class SelectPlotWidget(QWidget):
         self.rb_2d_plot.setToolTip(msg.ToolTips.t84)
         self.rb_2d_plot.setChecked(True)
         self.rb_delA_plot = QRadioButton(
-            "DelA Plot", self, objectName='delA_plot')
+            "ΔA Plot", self, objectName='delA_plot')
         self.rb_delA_plot.setToolTip(msg.ToolTips.t85)
         self.rb_kin_trace = QRadioButton(
             "Kin Trace", self, objectName='kin_trace')
@@ -491,7 +491,7 @@ class SelectPlotWidget(QWidget):
             'plot_2d': '2D Plot',
             'eas_das': 'EAS/DAS/SAS',
             'conc': 'Concentration',
-            'dela_plot': 'DelA Plot',
+            'dela_plot': 'ΔA Plot',
             'kinetic_trace': 'Kinetic Trace',
             'emcee': 'Posterior Dist'}
 
@@ -528,7 +528,7 @@ class SelectPlotWidget(QWidget):
         self.le_fig_size_w.setToolTip(msg.ToolTips.t91)
         self.le_fig_size_h = QLineEdit(objectName='fig_size_h')
         self.le_fig_size_h.setToolTip(msg.ToolTips.t92)
-        self.check_display_size = QCheckBox('show real size?')
+        self.check_display_size = QCheckBox('Show Real Size?')
         self.check_display_size.setToolTip(msg.ToolTips.t93)
         self.l_DPI = QLabel("Figure DPI:")
         self.le_fig_dpi = QLineEdit(objectName='fig_dpi')
@@ -539,22 +539,48 @@ class SelectPlotWidget(QWidget):
         self.l_DPI.setVisible(True)
         self.le_fig_dpi.setVisible(True)
 
-        self.check_svg_text2path = QCheckBox('render text as path?')
+        self.check_svg_text2path = QCheckBox('Render Text as Path?')
         self.check_svg_text2path.setToolTip(msg.ToolTips.t06)
 
         self.check_svg_text2path.setVisible(False)
+        
+        def restrict_qfontcombobox_to_matplotlib(font_cb: QFontComboBox) -> None:
+            """
+            Replace `font_cb`'s model so it lists only the font families that
+            Matplotlib can actually render.  PyQt-6 safe (static QFontDatabase API).
+            """
+            # 1) Families Matplotlib knows (case-folded for robust matching)
+            mpl_families = {fe.name.lower() for fe in fm.fontManager.ttflist}
+         
+            # 2) Intersect with what Qt sees
+            allowed = [fam for fam in QFontDatabase.families()
+                       if fam.lower() in mpl_families]
+         
+            # 3) Build a new model
+            model = QStandardItemModel()
+            for fam in sorted(allowed, key=str.casefold):
+                item = QStandardItem(fam)                    # visible text
+                item.setData(QFont(fam), Qt.ItemDataRole.FontRole)  # preview glyphs
+                model.appendRow(item)
+         
+            font_cb.setModel(model)
+            font_cb.setCurrentIndex(-1)          # no pre-selection; keeps completer ok
+        
+        
+        self.font_cb = QFontComboBox(objectName='fig_font')
+        restrict_qfontcombobox_to_matplotlib(self.font_cb) 
+        self.cb_font_style = QComboBox(objectName='fig_font_style')
+        self.font_cb.setToolTip(msg.ToolTips.t99)
 
-        self.le_fig_font = QLineEdit(objectName='fig_font')
-        self.le_fig_font.setToolTip(msg.ToolTips.t99)
-        self.font_list = fm.get_font_names()
-        self.fonts_completer = QCompleter(self.font_list)
-        self.fonts_completer.setCaseSensitivity(
-            Qt.CaseSensitivity.CaseInsensitive)
-        self.le_fig_font.setCompleter(self.fonts_completer)
-        regex = QRegularExpression(f"^({'|'.join(map(QRegularExpression.escape, self.font_list))})$",
-                                   QRegularExpression.PatternOption.CaseInsensitiveOption)
-        validator = QRegularExpressionValidator(regex, self.le_fig_font)
-        self.le_fig_font.setValidator(validator)
+        def populate_styles(qfont):
+            self.cb_font_style.clear()
+            fam = qfont.family()
+            for style in QFontDatabase.styles(fam):
+                self.cb_font_style.addItem(style)
+
+        self.font_cb.currentFontChanged.connect(populate_styles)
+        populate_styles(self.font_cb.currentFont())
+
         self.sb_label_size = QSpinBox(
             minimum=1, maximum=40, suffix=' pt', objectName='label_size')
         self.sb_label_size.setToolTip(msg.ToolTips.t96)
@@ -575,7 +601,7 @@ class SelectPlotWidget(QWidget):
         self.cb_fig_format.currentIndexChanged.connect(self.change_dpi_vs_path)
 
         self.w_style_layout = QGridLayout()
-        self.w_style_layout.addWidget(QLabel("current Style:"), 0, 0)
+        self.w_style_layout.addWidget(QLabel("Current Style:"), 0, 0)
         self.w_style_layout.addWidget(self.le_style, 0, 1, )
         self.w_style_layout.addWidget(self.pb_add_rcParam, 0, 2, )
         self.w_style_layout.addWidget(QLabel("Figure Size:"), 1, 0,)
@@ -584,20 +610,22 @@ class SelectPlotWidget(QWidget):
         self.w_style_layout.addWidget(self.check_display_size, 2, 0, 1, 2)
 
         self.w_style_layout.addWidget(QLabel("Figure Font:"), 3, 0,)
-        self.w_style_layout.addWidget(self.le_fig_font, 3, 1, 1, 2)
-        self.w_style_layout.addWidget(QLabel("Label Size:"), 4, 0,)
-        self.w_style_layout.addWidget(self.sb_label_size, 4, 1, )
-        self.w_style_layout.addWidget(QLabel("Ticks Size:"), 5, 0,)
-        self.w_style_layout.addWidget(self.sb_tick_size, 5, 1,)
-        self.w_style_layout.addWidget(QLabel("Format:"), 6, 0,)
-        self.w_style_layout.addWidget(self.cb_fig_format, 6, 1)
-        self.w_style_layout.addWidget(self.l_DPI, 7, 0,)
-        self.w_style_layout.addWidget(self.le_fig_dpi, 7, 1)
-        self.w_style_layout.addWidget(self.check_svg_text2path, 7, 0, 1, 2)
-        self.w_style_layout.addWidget(QLabel("Result Dir:"), 8, 0,)
-        self.w_style_layout.addWidget(self.le_results_dir, 8, 1, 1, 3)
-        self.w_style_layout.addWidget(self.pb_save_fig, 9, 0)
-        self.w_style_layout.addWidget(self.pb_save_as_fig, 9, 2)
+        self.w_style_layout.addWidget(self.font_cb, 3, 1, 1, 2)
+        self.w_style_layout.addWidget(QLabel("Font Style:"), 4, 0,)
+        self.w_style_layout.addWidget(self.cb_font_style, 4, 1, 1, 2)
+        self.w_style_layout.addWidget(QLabel("Label Size:"), 5, 0,)
+        self.w_style_layout.addWidget(self.sb_label_size, 5, 1, )
+        self.w_style_layout.addWidget(QLabel("Ticks Size:"), 6, 0,)
+        self.w_style_layout.addWidget(self.sb_tick_size, 6, 1,)
+        self.w_style_layout.addWidget(QLabel("Format:"), 7, 0,)
+        self.w_style_layout.addWidget(self.cb_fig_format, 7, 1)
+        self.w_style_layout.addWidget(self.l_DPI, 8, 0,)
+        self.w_style_layout.addWidget(self.le_fig_dpi, 8, 1)
+        self.w_style_layout.addWidget(self.check_svg_text2path, 8, 0, 1, 2)
+        self.w_style_layout.addWidget(QLabel("Result Dir:"), 9, 0,)
+        self.w_style_layout.addWidget(self.le_results_dir, 9, 1, 1, 3)
+        self.w_style_layout.addWidget(self.pb_save_fig, 10, 0)
+        self.w_style_layout.addWidget(self.pb_save_as_fig, 10, 2)
 
         self.w_style.setLayout(self.w_style_layout)
 
@@ -679,7 +707,7 @@ class SurfPlotProperties(QWidget):
 
         self.w_show_ss = QWidget()
         self.w_show_ss.check_show_ss = QCheckBox(
-            "display steady-state", objectName='check_show_ss')
+            "Display Steady-State Data", objectName='check_show_ss')
         layout = QGridLayout()
         layout.addWidget(self.w_show_ss.check_show_ss, 0, 0)
         self.w_show_ss.setLayout(layout)
@@ -778,7 +806,7 @@ class LocalFitProperties(QWidget):
         self.w_trimm = Widgets.trimm_widget(exclude='Wavelength')
 
         self.w_select_fit = Widgets.select_fit(
-            label='select kinetic fits:', exclusive_check=False)
+            label='Select Kinetic Fits:', exclusive_check=False)
 
         self.w_select_data_color = Widgets.select_data_color_widget('Local')
 
@@ -788,7 +816,7 @@ class LocalFitProperties(QWidget):
 
         self.w_show_conc = QWidget()
         self.w_show_conc.check_show_conc = QCheckBox(
-            "show components", objectName='check_show_conc')
+            "Show Components", objectName='check_show_conc')
         self.w_show_conc_layout = QGridLayout()
         self.w_show_conc_layout.addWidget(
             self.w_show_conc.check_show_conc, 0, 0)
@@ -796,7 +824,7 @@ class LocalFitProperties(QWidget):
 
         self.w_show_tau = QWidget()
         self.w_show_tau.check_show_tau = QCheckBox(
-            "show lifetimes", objectName='check_show_tau')
+            "Show Lifetimes", objectName='check_show_tau')
         self.w_show_tau_layout = QGridLayout()
         self.w_show_tau_layout.addWidget(self.w_show_tau.check_show_tau, 0, 0)
         self.w_show_tau.setLayout(self.w_show_tau_layout)
@@ -836,14 +864,16 @@ class GlobalFitProperties_2D(QWidget):
                 sender.le_merge_thresh.setVisible(False)
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Global Fit:', exclusive_check=True)
 
         self.w_select_2D_plot = QWidget()
         self.w_select_2D_plot.cb_2D_plot = QComboBox(objectName='cb_2D_plot')
         self.w_select_2D_plot.cb_2D_plot.addItems(
             ['simulated', 'residuals', 'merge'])
+        self.w_select_2D_plot.cb_2D_plot.setToolTip(msg.ToolTips.t127)
         self.w_select_2D_plot.le_merge_thresh = QLineEdit(
             placeholderText=msg.Widgets.i12, maximumWidth=50, objectName='le_merge_thresh')
+        self.w_select_2D_plot.le_merge_thresh.setToolTip(msg.ToolTips.t128)
         self.w_select_2D_plot.le_merge_thresh.setVisible(False)
         layout = QGridLayout()
         layout.addWidget(QLabel('Type'), 0, 0)
@@ -886,7 +916,7 @@ class GlobalFitProperties_EASDAS(QWidget):
     def initUI(self):
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Global Fit:', exclusive_check=True)
 
         self.w_trimm = Widgets.trimm_widget(exclude='Delay')
         self.w_show_legend = Widgets.show_legend()
@@ -929,7 +959,7 @@ class GlobalFitProperties_conc(QWidget):
     def initUI(self):
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Global Fit:', exclusive_check=True)
 
         self.w_trimm = Widgets.trimm_widget(exclude='Wavelength')
         self.w_trimm.z_label.setText("Conc")
@@ -957,7 +987,7 @@ class GlobalFitProperties_DelA(QWidget):
     def initUI(self):
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Global Fit:', exclusive_check=True)
         self.w_trimm = Widgets.trimm_widget(exclude='Delay')
         self.w_show_legend = Widgets.show_legend()
 
@@ -1001,7 +1031,7 @@ class GlobalFitProperties_KinTrace(QWidget):
     def initUI(self):
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Global Fit:', exclusive_check=True)
         self.w_trimm = Widgets.trimm_widget(exclude='Wavelength')
         self.w_show_legend = Widgets.show_legend()
 
@@ -1041,7 +1071,7 @@ class GlobalFitProperties_emcee(QWidget):
     def initUI(self):
 
         self.w_select_fit = Widgets.select_fit(
-            label='select global fit:', exclusive_check=True)
+            label='Select Fit:', exclusive_check=True)
         self.w_corner_manipulation = QWidget()
         self.w_corner_manipulation.sb_bins = QSpinBox(
             minimum=2, maximum=100, value=5, objectName='sb_bins', maximumWidth=100)
@@ -1054,7 +1084,7 @@ class GlobalFitProperties_emcee(QWidget):
         self.w_corner_manipulation.sb_tick_num = QSpinBox(
             minimum=0, maximum=100, value=5, objectName='sb_tick_num', maximumWidth=100)
         self.w_corner_manipulation.check_plot_datapoints = QCheckBox(
-            'Show datapoints', objectName='check_plot_datapoints')
+            'Show Datapoints', objectName='check_plot_datapoints')
         self.w_corner_manipulation.check_show_titles = QCheckBox(
             'Show Errors', objectName='check_show_titles')
         self.w_corner_manipulation.check_show_quantiles = QCheckBox(
@@ -1068,13 +1098,24 @@ class GlobalFitProperties_emcee(QWidget):
         layout.addRow('Bins', self.w_corner_manipulation.sb_bins)
         layout.addRow('Label Pad', self.w_corner_manipulation.sb_label_pad)
         layout.addRow('Subplot Pad', self.w_corner_manipulation.sb_subplot_pad)
-        layout.addRow('max # of Ticks', self.w_corner_manipulation.sb_tick_num)
+        layout.addRow('Max # of Ticks', self.w_corner_manipulation.sb_tick_num)
         layout.addRow(self.w_corner_manipulation.check_truth)
         layout.addRow(self.w_corner_manipulation.check_show_titles)
         layout.addRow(self.w_corner_manipulation.check_show_quantiles)
         layout.addRow(self.w_corner_manipulation.check_plot_datapoints)
         layout.addRow(self.w_corner_manipulation.check_plot_contours)
         layout.addRow(self.w_corner_manipulation.check_plot_density)
+
+        self.w_corner_manipulation.sb_bins.setToolTip(msg.ToolTips.t129)
+        self.w_corner_manipulation.check_truth.setToolTip(msg.ToolTips.t133)
+        self.w_corner_manipulation.sb_label_pad.setToolTip(msg.ToolTips.t130)
+        self.w_corner_manipulation.sb_subplot_pad.setToolTip(msg.ToolTips.t131)
+        self.w_corner_manipulation.sb_tick_num.setToolTip(msg.ToolTips.t132)
+        self.w_corner_manipulation.check_plot_datapoints.setToolTip(msg.ToolTips.t136)
+        self.w_corner_manipulation.check_show_titles.setToolTip(msg.ToolTips.t134)
+        self.w_corner_manipulation.check_show_quantiles.setToolTip(msg.ToolTips.t135)
+        self.w_corner_manipulation.check_plot_contours.setToolTip(msg.ToolTips.t137)
+        self.w_corner_manipulation.check_plot_density.setToolTip(msg.ToolTips.t138)
 
         self.w_corner_manipulation.setLayout(layout)
 

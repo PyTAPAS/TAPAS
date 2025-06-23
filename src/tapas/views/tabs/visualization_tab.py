@@ -27,8 +27,8 @@ from pathlib import Path
 # Third‑Party Imports
 
 # PyQt6 Imports
-from PyQt6.QtCore import Qt, QRegularExpression
-from PyQt6.QtGui import QRegularExpressionValidator
+from PyQt6.QtCore import Qt, QRegularExpression, QSignalBlocker
+from PyQt6.QtGui import QRegularExpressionValidator, QFontDatabase, QFont
 from PyQt6.QtWidgets import (
     QComboBox,
     QCompleter,
@@ -48,6 +48,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.ticker as tk
 from matplotlib import colors
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 from matplotlib.backends import backend_svg
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.colors import ListedColormap
@@ -100,7 +102,8 @@ class VisualizeTab(QWidget):
         self.need_data_update = False
         self.project_path = None
         self.results_dir = None
-        self.font_family = ['DejaVu Sans',  'Arial']
+
+        self.font_property = fm.FontProperties(["DejaVu Sans", "sans-serif"])
         self.fig_width, self.fig_height = None, None
         self.x_min, self.x_max = None, None
         self.y_min, self.y_linlog, self.y_max = None, None, None
@@ -112,7 +115,6 @@ class VisualizeTab(QWidget):
         self.norm_min, self.norm_max = None, None
         self.checkboxes = []
         self.InitUI()
-
 
     def InitUI(self):
         # -------- create Widgets ------------------------------------------------------------------
@@ -167,8 +169,12 @@ class VisualizeTab(QWidget):
             self.plot_data)
         self.tw_select_plot.sb_tick_size.valueChanged.connect(
             self.plot_data)
-        self.tw_select_plot.le_fig_font.editingFinished.connect(
-            self.update_current_style)
+        self.tw_select_plot.font_cb.currentFontChanged.connect(
+            lambda _: self.update_current_style(update_all=False)
+        )
+        self.tw_select_plot.cb_font_style.currentTextChanged.connect(
+            lambda _: self.update_current_style(update_all=False)
+        )
         self.tw_select_plot.pb_save_fig.clicked.connect(self.save_fig)
         self.tw_select_plot.pb_save_as_fig.pressed.connect(
             lambda: self.save_fig(save_as=True))
@@ -1176,6 +1182,50 @@ class VisualizeTab(QWidget):
                 False)
         self.plot_data()
 
+    @staticmethod
+    def _qt_weight_to_mpl_weight(css: int) -> str:
+        """100-900 → keyword Matplotlib’s weight_dict knows."""
+        if css < 250:
+            return "ultralight"
+        elif css < 350:
+            return "light"
+        elif css < 450:
+            return "normal"      # 400
+        elif css < 550:
+            return "medium"
+        elif css < 650:
+            return "semibold"
+        elif css < 750:
+            return "bold"        # 700
+        elif css < 850:
+            return "heavy"
+        else:
+            return "black"       # 900
+
+    @staticmethod
+    def _qt_style_to_mpl_stretch(style_txt: str) -> str:
+        s = style_txt.lower()
+
+        if "ultra" in s and "condensed" in s:
+            return "ultra-condensed"
+        if "extra" in s and "condensed" in s:
+            return "extra-condensed"
+        if ("semi" in s and "condensed" in s) or "compressed" in s:
+            return "semi-condensed"
+        if "condensed" in s or "narrow" in s:
+            return "condensed"
+
+        if "ultra" in s and "expanded" in s:
+            return "ultra-expanded"
+        if "extra" in s and "expanded" in s:
+            return "extra-expanded"
+        if "semi" in s and "expanded" in s:
+            return "semi-expanded"
+        if "expanded" in s:
+            return "expanded"
+
+        return "normal"
+
     def update_current_style(self, update_all: bool | QWidget = False) -> None:
         '''updates the figure dimensions and style without tuouching rc Params'''
 
@@ -1197,15 +1247,31 @@ class VisualizeTab(QWidget):
                 self.visualize_controller.call_statusbar(
                     "error", msg.Error.e02)
 
-        if self.sender().objectName() == 'fig_font' or update_all:
-            selected_font = self.tw_select_plot.le_fig_font.text()
-            if selected_font == "":
-                pass
-            elif selected_font in self.tw_select_plot.font_list:
-                self.font_family.insert(0, selected_font)
-            else:
-                self.visualize_controller.call_statusbar(
-                    "error", msg.Error.e15)
+        if self.sender().objectName() in ['fig_font', 'fig_font_style'] or update_all:
+
+            fam = self.tw_select_plot.font_cb.currentFont().family()
+            if fam:
+                style = self.tw_select_plot.cb_font_style.currentText() or "Normal"
+                qf = QFontDatabase.font(fam, style, -1)  # Qt font obj
+
+                if qf.style() == QFont.Style.StyleItalic:
+                    mpl_style = "italic"
+                elif qf.style() == QFont.Style.StyleOblique:
+                    mpl_style = "oblique"
+                else:
+                    mpl_style = "normal"
+
+                mpl_stretch = self._qt_style_to_mpl_stretch(style)  # condensed / expanded …
+                mpl_weight = self._qt_weight_to_mpl_weight(qf.weight())
+
+                # Convert to Matplotlib
+                fp = fm.FontProperties(
+                    family=[fam] + ["DejaVu Sans", "sans-serif"],
+                    style=mpl_style,  # "italic", ...
+                    weight=mpl_weight,  # 'light', ...
+                    stretch=mpl_stretch)  # condensed / expanded …
+                self.font_property = fp
+
         if not update_all:
             self.plot_data()
 
@@ -1238,8 +1304,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_2D_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_delA_plot_properties
         widgets = [tw.w_trimm.le_xmin, tw.w_trimm.le_xmax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1251,8 +1319,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_delA_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_kin_trace_properties
         widgets = [tw.w_trimm.le_ymin, tw.w_trimm.le_ymax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1263,8 +1333,10 @@ class VisualizeTab(QWidget):
                    tw.w_normalize.check_abs_value, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_kinTrace_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_local_fit_properties[0]
         widgets = [tw.w_trimm.le_ymin, tw.w_trimm.le_ymax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1276,8 +1348,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_residuals.check_show_residuals, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_local_fit_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_local_fit_properties[1].w_corner_manipulation
         widgets = [tw.sb_bins, tw.sb_label_pad, tw.sb_subplot_pad, tw.sb_tick_num,
@@ -1285,8 +1359,10 @@ class VisualizeTab(QWidget):
                    tw.check_plot_datapoints, tw.check_plot_contours, tw.check_plot_density]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_local_fit_emcee_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[0]
         widgets = [tw.w_select_2D_plot.cb_2D_plot, tw.w_select_2D_plot.cb_2D_plot, tw.w_trimm.le_xmin,
@@ -1299,8 +1375,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_pump.check_show_pump, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_fit_2D_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[1]
         widgets = [tw.w_trimm.le_xmin, tw.w_trimm.le_xmax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1312,8 +1390,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_pump.check_show_pump, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_fit_EASDAS_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[2]
         widgets = [tw.w_trimm.le_ymin, tw.w_trimm.le_ymax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1322,8 +1402,10 @@ class VisualizeTab(QWidget):
                    tw.w_select_data_color.le_custom_colors, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_fit_conc_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[3]
         widgets = [tw.w_trimm.le_xmin, tw.w_trimm.le_xmax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1336,8 +1418,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_fit_delA_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[4]
         widgets = [tw.w_trimm.le_ymin, tw.w_trimm.le_ymax,  tw.w_trimm.le_zmin, tw.w_trimm.le_zmax,
@@ -1349,8 +1433,10 @@ class VisualizeTab(QWidget):
                    tw.w_show_residuals.check_show_residuals, tw.w_show_info.check_show_info]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_fit_kinTrace_{w.objectName()}', w)
+            del blocker
 
         tw = self.tw_global_fit_properties[5].w_corner_manipulation
         widgets = [tw.sb_bins, tw.sb_label_pad, tw.sb_subplot_pad, tw.sb_tick_num,
@@ -1358,8 +1444,10 @@ class VisualizeTab(QWidget):
                    tw.check_plot_datapoints, tw.check_plot_contours, tw.check_plot_density]
 
         for w in widgets:
+            blocker = QSignalBlocker(w)
             self.config.add_handler(
                 f'visualize_w_global_emcee_{w.objectName()}', w)
+            del blocker
 
     def update_properties_gui(self, state: bool) -> None:
         '''
@@ -1483,6 +1571,7 @@ class VisualizeTab(QWidget):
         If save_fig, figure will also be saved '''
 
         # -------- helper functions ----------------------------------------------------------------
+
         def _set_axes_scale(axes: Axes, xlim: tuple, ylim: tuple, x_formatter=None, y_formatter=None) -> None:
             ''' sets scales, formatters adn limits of mpl axes object '''
             axes.set(xlim=xlim)
@@ -1556,7 +1645,7 @@ class VisualizeTab(QWidget):
             ''' sets title of a given axes using meta information of the project '''
             title = self.visualize_controller.get_title()
             axes.set_title(
-                title, size=self.label_size, family=self.font_family, loc='left', )
+                title, fontproperties=self.font_property, size=self.label_size,  loc='left', )
 
         def _show_pump(axes: Axes, annotate: bool = True) -> None:
             ''' adds vertical line to axes to indicate pump wavelength '''
@@ -1573,7 +1662,7 @@ class VisualizeTab(QWidget):
                             axes.annotate('Pump', xy=(pump, axes.get_ylim()[1]),
                                           xytext=(3, -3), textcoords='offset points',
                                           ha='right', va='top', color='black', size=self.tick_size,
-                                          family=self.font_family, rotation=90,
+                                          fontproperties=self.font_property, rotation=90,
                                           rotation_mode='anchor')
                     else:
                         self.visualize_controller.call_statusbar(
@@ -1614,7 +1703,7 @@ class VisualizeTab(QWidget):
             majEnTicks = np.arange(np.ceil(utils.Converter.m_in_eV(axes.get_xlim()[0]) * 2) / 2,
                                    np.floor(utils.Converter.m_in_eV(axes.get_xlim()[1]) * 2) / 2, -0.5)
             _ax2.set_xlabel(
-                "Energy (eV)", fontsize=self.label_size, family=self.font_family)
+                "Energy (eV)", fontproperties=self.font_property, fontsize=self.label_size)
             _ax2.set_xticks(utils.Converter.eV_in_m(majEnTicks))
             _ax2.set_xlim(axes.get_xlim())
             _ax2.set_xticklabels(majEnTicks)
@@ -1623,7 +1712,9 @@ class VisualizeTab(QWidget):
             _ax2.xaxis.set_minor_locator(tk.FixedLocator(
                 utils.Converter.eV_in_m(minEnTicks)))
             _ax2.tick_params(
-                labelleft=False, labelsize=self.tick_size, labelfontfamily=self.font_family)
+                labelleft=False, labelsize=self.tick_size)
+            plt.setp(_ax2.xaxis.get_majorticklabels() + _ax2.yaxis.get_majorticklabels(),
+                     fontproperties=self.font_property, fontsize=self.tick_size)
 
         def _add_hide_patches(axes: Axes) -> PathPatch:
             ''' calculates and returns the drawing area depending on axes limits and hide inputs '''
@@ -1719,11 +1810,15 @@ class VisualizeTab(QWidget):
 
         def _show_legend(axes, loc: str, title: str | None = None, handles=None, labels=None) -> None:
             ''' sets axes legend '''
+            fp_labels = self.font_property.copy()
+            fp_labels.set_size(self.tick_size)
+            fp_title = self.font_property.copy()
+            fp_title.set_size(self.label_size)
             kwargs = {
                 'borderaxespad': 0,
                 'title': title,
-                'prop': {'size': self.tick_size, 'family': self.font_family},
-                'title_fontproperties': {'size': self.label_size, 'family': self.font_family}
+                'prop': fp_labels,
+                'title_fontproperties': fp_title
             }
             if loc == 'outside':
                 # For an outside legend, update with additional settings
@@ -1823,9 +1918,9 @@ class VisualizeTab(QWidget):
             axLin.tick_params(
                 which='both',
                 top=False,
-                labeltop=False,
-                labelsize=self.tick_size,
-                labelfontfamily=self.font_family,)
+                labeltop=False,)
+            plt.setp(axLin.xaxis.get_majorticklabels() + axLin.yaxis.get_majorticklabels(),
+                     fontproperties=self.font_property, fontsize=self.tick_size)
 
             axLin.grid(False)
             axLog.grid(False)
@@ -1845,13 +1940,14 @@ class VisualizeTab(QWidget):
             axLog.spines['bottom'].set_visible(False)
 
             axLog.yaxis.set_ticks_position("both")
-            axLog.tick_params(which='both', bottom=False,
-                              labelsize=self.tick_size, labelfontfamily=self.font_family,)
+            axLog.tick_params(which='both', bottom=False,)
+            plt.setp(axLog.xaxis.get_majorticklabels() + axLog.yaxis.get_majorticklabels(),
+                     fontproperties=self.font_property, fontsize=self.tick_size)
 
             axLin.set_xlabel(msg.Labels.wavelength,
-                             fontsize=self.label_size, family=self.font_family)
+                             fontsize=self.label_size, fontproperties=self.font_property)
             self.fig.supylabel(
-                msg.Labels.delay, fontsize=self.label_size, family=self.font_family, )
+                msg.Labels.delay, fontsize=self.label_size, fontproperties=self.font_property, )
 
             if self.tw_surf_plot_properties.w_show_delA_cuts.check_show_delA_cuts.isChecked():
                 colorlist = _get_colorlist(
@@ -1904,7 +2000,7 @@ class VisualizeTab(QWidget):
                                     color="maroon", linestyle="dotted")
 
                     ax_Abs.set_ylabel(
-                        "A (a.u.)", color="red", fontsize=self.label_size, family=self.font_family)
+                        "A (a.u.)", color="red", fontsize=self.label_size, fontproperties=self.font_property)
                     ax_Abs.fill_between(
                         abs_before[:, 0], Abs_offset_normal_before, 0, color='red', alpha=0.25)
 
@@ -1918,7 +2014,7 @@ class VisualizeTab(QWidget):
                     ax_Fl = ax_Abs.twinx()
                     ax_Fl.grid(False)
                     ax_Fl.set_ylabel(
-                        "PL (a.u.)", color="blue", fontsize=self.label_size, family=self.font_family)
+                        "PL (a.u.)", color="blue", fontsize=self.label_size, fontproperties=self.font_property)
                     ax_Fl.yaxis.set_label_coords(1.05, 0.5)
                     ax_Fl.plot(em_before[:, 0], Fl_norm_before, "b")
                     if em_after is not None:
@@ -1957,10 +2053,11 @@ class VisualizeTab(QWidget):
                         pcolormesh_plot_lin, cax=cax, orientation="horizontal", use_gridspec=True)
 
                 cbar.minorticks_on()
-                cbar.ax.tick_params(labelsize=self.tick_size,
-                                    labelfontfamily=self.font_family)
+                plt.setp(cbar.ax.xaxis.get_majorticklabels() + cbar.ax.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
+
                 cbar.set_label(
-                    label=msg.Labels.delA, size=self.label_size, family=self.font_family)
+                    label=msg.Labels.delA, size=self.label_size, fontproperties=self.font_property)
 
             if self.tw_surf_plot_properties.w_show_info.check_show_info.isChecked():
                 if self.tw_surf_plot_properties.w_show_ss.check_show_ss.isChecked():
@@ -1985,10 +2082,12 @@ class VisualizeTab(QWidget):
             ax1 = self.fig.add_subplot(111)
             ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
             ax1.set_xlabel(msg.Labels.wavelength,
-                           fontsize=self.label_size, family=self.font_family)
-            ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-            ax1.tick_params(labelleft=True, right=True,
-                            labelsize=self.tick_size, labelfontfamily=self.font_family)
+                           fontsize=self.label_size, fontproperties=self.font_property)
+            ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size,
+                           fontproperties=self.font_property)
+            ax1.tick_params(labelleft=True, right=True)
+            plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                     fontproperties=self.font_property, fontsize=self.tick_size)
             _init_bounds()
             ax1.xaxis.set_minor_locator(tk.AutoMinorLocator())
             _set_axes_scale(axes=ax1, xlim=(self.x_min, self.x_max), ylim=(
@@ -2030,16 +2129,19 @@ class VisualizeTab(QWidget):
             ax1 = self.fig.add_subplot(111)
             ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
             ax1.set_xlabel(msg.Labels.delay,
-                           fontsize=self.label_size, family=self.font_family)
-            ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-            ax1.tick_params(labelleft=True, right=True,
-                            labelsize=self.tick_size, labelfontfamily=self.font_family)
+                           fontsize=self.label_size, fontproperties=self.font_property)
+            ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size,
+                           fontproperties=self.font_property)
+            ax1.tick_params(labelleft=True, right=True)
+            plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                     fontproperties=self.font_property, fontsize=self.tick_size)
+            ax1
             self.check_z_input(update_all=self.tw_kin_trace_properties)
             _init_bounds(normalized=normalize, absolute=absolute)
 
             if normalize:
                 ax1.set_ylabel(msg.Labels.delA_norm,
-                               fontsize=self.label_size, family=self.font_family)
+                               fontsize=self.label_size, fontproperties=self.font_property)
                 norm_intervall = _get_norm_intervall(data=self.buffer_dataY)
 
             if absolute:
@@ -2101,12 +2203,12 @@ class VisualizeTab(QWidget):
                     ax1 = self.fig.add_subplot(111)
 
                 ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
-                ax1.set_xlabel(msg.Labels.delay,
-                               fontsize=self.label_size, family=self.font_family)
+
                 ax1.set_ylabel(
-                    msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-                ax1.tick_params(labelleft=True, right=True,
-                                labelsize=self.tick_size, labelfontfamily=self.font_family)
+                    msg.Labels.delA, fontsize=self.label_size, fontproperties=self.font_property)
+                ax1.tick_params(labelleft=True, right=True)
+                plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
 
                 # ----- set axis scale -----
                 self.check_z_input(update_all=self.tw_local_fit_properties[0])
@@ -2118,7 +2220,7 @@ class VisualizeTab(QWidget):
                 # ----- set normalization params -----
                 if normalize:
                     ax1.set_ylabel(msg.Labels.delA_norm,
-                                   fontsize=self.label_size, family=self.font_family)
+                                   fontsize=self.label_size, fontproperties=self.font_property)
                     norm_intervall = _get_norm_intervall(data=self.buffer_dataY)
 
                 # ----- get colorlist -----
@@ -2151,6 +2253,14 @@ class VisualizeTab(QWidget):
 
                     ax1.plot(delay, delA_calc, color=colorlist[color_idx],
                              label=f"{self.sc.nm_formatter_ax(fit_dict[ukey]['wavelength'])} nm fit")
+                    labels = fit_dict[ukey]['meta']['components']
+                    labels_tex = [f'${label}$' for label in labels]
+                    ca_order = fit_dict[ukey]['meta']['ca_order']
+                    has_inf = fit_dict[ukey]['meta']['Ainf']
+                    n_cols = conc.shape[1]
+                    n_kin = n_cols - ca_order - (1 if has_inf else 0)
+                    comp_colorlist = utils.Converter.components_colorlist(
+                        colorlist[color_idx], n_cols)
 
                     if self.tw_local_fit_properties[0].w_show_data.check_show_data.isChecked():
                         ax1.plot(delay, delA_exp, 'x', color=fit_colorlist[color_idx], alpha=0.75,
@@ -2160,36 +2270,43 @@ class VisualizeTab(QWidget):
 
                         # plotting conc only makes sense if more than 1 comp
                         if conc.shape[1] >= 2:
-                            for i in range((conc.shape[1] - 1)):
-                                label = f"$C_{{{i+1}}}$ {self.sc.delay_formatter0(opt_params[f't{i+1}'])}s"
-                                ax1.plot(delay, conc[:, i] * amp[i], ':', color=colorlist[color_idx],
-                                         label=label)
-                            if fit_dict[ukey]['meta']['Ainf']:
-                                ax1.plot(
-                                    delay, conc[:, -1] * amp[-1], ':', color=colorlist[color_idx],
-                                    label='$C_{inf}$')
-                            else:
-                                label = f"$C_{{{conc.shape[1]}}}$ {self.sc.delay_formatter0(opt_params[f't{conc.shape[1]}'])}s "
-                                ax1.plot(delay, conc[:, -1] * amp[-1], ':', color=colorlist[color_idx],
+                            for j in range(n_cols):
+                                if j < ca_order:
+                                    label = labels_tex[j]
+
+                                elif j < ca_order + n_kin:
+                                    tau_idx = j - ca_order + 1
+                                    tau_val = opt_params[f'τ{tau_idx}']
+                                    label = f"{labels_tex[j]} {self.sc.delay_formatter0(tau_val)}s"
+
+                                else:
+                                    label = labels_tex[j]
+
+                                ax1.plot(delay, conc[:, j] * amp[j],
+                                         '--', color=comp_colorlist[j],
                                          label=label)
                         else:
                             if self.tw_local_fit_properties[0].w_show_tau.check_show_tau.isChecked():
-                                ax1.plot([], [], '', alpha=0, label='$C_{1}$ ' + str(
-                                    self.sc.delay_formatter0(opt_params['t1']) + 's '))
+                                ax1.plot([], [], '', alpha=0, label='{labels_tex[0]}' + str(
+                                    self.sc.delay_formatter0(opt_params['τ1']) + 's '))
 
                     if self.tw_local_fit_properties[0].w_show_tau.check_show_tau.isChecked() and not self.tw_local_fit_properties[0].w_show_conc.check_show_conc.isChecked():
                         if conc.shape[1] >= 2:
-                            for i in range((conc.shape[1] - 1)):
-                                label = f"$C_{{{i+1}}}$ {self.sc.delay_formatter0(opt_params[f't{i+1}'])}s"
-                                ax1.plot([], [], '', alpha=0, label=label)
-                            if fit_dict[ukey]['meta']['Ainf']:
-                                ax1.plot([], [], '', alpha=0,
-                                         label='$C_{inf}$')
-                            else:
-                                label = f"$C_{{{conc.shape[1]}}}$ {self.sc.delay_formatter0(opt_params[f't{conc.shape[1]}'])}s"
+                            for j in range(n_cols):
+                                if j < ca_order:
+                                    label = labels_tex[j]
+
+                                elif j < ca_order + n_kin:
+                                    tau_idx = j - ca_order + 1
+                                    tau_val = opt_params[f't{tau_idx}']
+                                    label = f"{labels_tex[j]} {self.sc.delay_formatter0(tau_val)}s"
+
+                                else:
+                                    label = labels_tex[j]
+
                                 ax1.plot([], [], '', alpha=0, label=label)
                         else:
-                            label = f"$C_{{1}}$ {self.sc.delay_formatter0(opt_params['t1'])}s"
+                            label = f"{labels_tex[0]} {self.sc.delay_formatter0(opt_params['t1'])}s"
                             ax1.plot([], [], '', alpha=0, label=label)
 
                     if self.tw_local_fit_properties[0].w_show_residuals.check_show_residuals.isChecked():
@@ -2198,6 +2315,14 @@ class VisualizeTab(QWidget):
                                     color='black', alpha=0.5)
                         ax2.plot(delay, delA_calc - delA_exp,
                                  color=colorlist[color_idx], label='residuals')
+                        ax2.tick_params(labelleft=True, right=True)
+                        plt.setp(ax2.xaxis.get_majorticklabels() + ax2.yaxis.get_majorticklabels(),
+                                 fontproperties=self.font_property, fontsize=self.tick_size)
+                        ax2.set_xlabel(msg.Labels.delay,
+                                       fontsize=self.label_size, fontproperties=self.font_property)
+                    else:
+                        ax1.set_xlabel(msg.Labels.delay,
+                                       fontsize=self.label_size, fontproperties=self.font_property)
 
                 if self.tw_local_fit_properties[0].w_show_legend.check_show_legend.isChecked():
                     _show_legend(axes=ax1, title='Wavelength',
@@ -2241,7 +2366,7 @@ class VisualizeTab(QWidget):
                     elif name == "IRF":
                         labels.append("IRF (s)")
                     elif name.startswith("t") and name[1:].isdigit():
-                        labels.append(fr"$t_{name[1:]}$ (s)")
+                        labels.append(fr"$τ_{name[1:]}$ (s)")
                     elif name.startswith("__ln"):
                         labels.append(r"ln(σ/mOD)")
                     else:
@@ -2270,6 +2395,8 @@ class VisualizeTab(QWidget):
                 diagonal_axes = np.diag(axes)
 
                 if show_titles:
+                    fp_title = self.font_property.copy()
+                    fp_title.set_size(self.label_size)
                     for i, ax in enumerate(diagonal_axes):
                         data = flatchain[:, i]
                         median = np.median(data)
@@ -2280,24 +2407,27 @@ class VisualizeTab(QWidget):
                             self.sc.emcee_formatter(qhigh - median),
                             self.sc.emcee_formatter(median - qlow)
                         )
-                        ax.set_title(title_str, size=self.label_size,
-                                     family=self.font_family,)
+                        ax.set_title(title_str, fontproperties=fp_title)
 
                 bottom_row = axes[-1, :]
                 for ax in bottom_row:
                     ax.xaxis.set_major_formatter(self.sc.emcee_formatter)
-                    ax.tick_params(axis='x', labelsize=self.tick_size,
-                                   labelfontfamily=self.font_family)
+                    # ax.tick_params(axis='x', labelsize=self.tick_size,
+                    #                labelfontfamily=self.font_family)
+                    plt.setp(ax.xaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    ax.xaxis.label.set_fontproperties(self.font_property)
                     ax.xaxis.label.set_fontsize(self.label_size)
-                    ax.xaxis.label.set_family(self.font_family)
 
                 left_column = axes[:, 0]
                 for ax in left_column:
                     ax.yaxis.set_major_formatter(self.sc.emcee_formatter)
-                    ax.tick_params(axis='y', labelsize=self.tick_size,
-                                   labelfontfamily=self.font_family)
+                    # ax.tick_params(axis='y', labelsize=self.tick_size,
+                    #                labelfontfamily=self.font_family)
+                    plt.setp(ax.yaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    ax.yaxis.label.set_fontproperties(self.font_property)
                     ax.yaxis.label.set_fontsize(self.label_size)
-                    ax.yaxis.label.set_family(self.font_family)
 
                 f.tight_layout()
 
@@ -2381,9 +2511,9 @@ class VisualizeTab(QWidget):
                 axLin.tick_params(
                     which='both',
                     top=False,
-                    labeltop=False,
-                    labelsize=self.tick_size,
-                    labelfontfamily=self.font_family,)
+                    labeltop=False)
+                plt.setp(axLin.xaxis.get_majorticklabels() + axLin.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
 
                 axLin.grid(False)
                 axLog.grid(False)
@@ -2408,7 +2538,6 @@ class VisualizeTab(QWidget):
                         thresh = None
                     if thresh is None:
                         thresh = 1
-                    # Mask for largely positive residuals (>= 0.5):
                     residuals_pos = np.where(
                         residuals >= thresh, residuals, np.nan)
                     # Mask for largely negative residuals (<= -0.5):
@@ -2418,13 +2547,13 @@ class VisualizeTab(QWidget):
                     # Plot positive residuals in red:
                     pos_plot = axLin.pcolormesh(
                         self.buffer_dataX, self.buffer_dataY, residuals_pos,
-                        cmap=ListedColormap(['red']),
+                        cmap=ListedColormap(['white']),
                         shading='auto', rasterized=True)
 
                     # Plot negative residuals in blue:
                     neg_plot = axLin.pcolormesh(
                         self.buffer_dataX, self.buffer_dataY, residuals_neg,
-                        cmap=ListedColormap(['blue']),
+                        cmap=ListedColormap(['black']),
                         shading='auto', rasterized=True)
 
                     pos_plot.set_clip_path(clip_patch_Lin)
@@ -2432,13 +2561,13 @@ class VisualizeTab(QWidget):
 
                     pos_plot = axLog.pcolormesh(
                         self.buffer_dataX, self.buffer_dataY, residuals_pos,
-                        cmap=ListedColormap(['red']),
+                        cmap=ListedColormap(['white']),
                         shading='auto', rasterized=True)
 
                     # Plot negative residuals in blue:
                     neg_plot = axLog.pcolormesh(
                         self.buffer_dataX, self.buffer_dataY, residuals_neg,
-                        cmap=ListedColormap(['blue']),
+                        cmap=ListedColormap(['black']),
                         shading='auto', rasterized=True)
                     pos_plot.set_clip_path(clip_patch_Log)
                     neg_plot.set_clip_path(clip_patch_Log)
@@ -2446,12 +2575,13 @@ class VisualizeTab(QWidget):
                 pcolormesh_plot_log.set_clip_path(clip_patch_Log)
                 axLog.spines['bottom'].set_visible(False)
                 axLog.yaxis.set_ticks_position("both")
-                axLog.tick_params(which='both', bottom=False,
-                                  labelsize=self.tick_size, labelfontfamily=self.font_family,)
+                axLog.tick_params(which='both', bottom=False)
+                plt.setp(axLog.xaxis.get_majorticklabels() + axLog.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
                 axLin.set_xlabel(msg.Labels.wavelength,
-                                 fontsize=self.label_size, family=self.font_family)
+                                 fontsize=self.label_size, fontproperties=self.font_property)
                 self.fig.supylabel(
-                    msg.Labels.delay, fontsize=self.label_size, family=self.font_family, )
+                    msg.Labels.delay, fontsize=self.label_size, fontproperties=self.font_property, )
 
                 if self.tw_properties.w_current_properties.w_show_second_ax.check_show_second_ax.isChecked():
                     _show_2nd_axis(axes=axLog)
@@ -2479,9 +2609,10 @@ class VisualizeTab(QWidget):
                             pcolormesh_plot_lin, cax=cax, orientation="horizontal", use_gridspec=True)
 
                     cbar.minorticks_on()
-                    cbar.ax.tick_params(labelsize=self.tick_size,
-                                        labelfontfamily=self.font_family)
-                    cbar.set_label(label=cbar_label, size=self.label_size, family=self.font_family)
+                    plt.setp(cbar.ax.xaxis.get_majorticklabels() + cbar.ax.yaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    cbar.set_label(label=cbar_label, size=self.label_size,
+                                   fontproperties=self.font_property)
 
                 if self.tw_properties.w_current_properties.w_show_info.check_show_info.isChecked():
                     _set_title(axes=axLog)
@@ -2508,10 +2639,12 @@ class VisualizeTab(QWidget):
                 ax1 = self.fig.add_subplot(111)
                 ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
                 ax1.set_xlabel(msg.Labels.wavelength,
-                               fontsize=self.label_size, family=self.font_family)
-                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-                ax1.tick_params(labelleft=True, right=True,
-                                labelsize=self.tick_size, labelfontfamily=self.font_family)
+                               fontsize=self.label_size, fontproperties=self.font_property)
+                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size,
+                               fontproperties=self.font_property)
+                ax1.tick_params(labelleft=True, right=True)
+                plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
                 ax1.xaxis.set_minor_locator(tk.AutoMinorLocator())
 
                 # refresh z input if unnormalized default is used
@@ -2523,7 +2656,7 @@ class VisualizeTab(QWidget):
                 # ----- set normalization params -----
                 if normalize:
                     ax1.set_ylabel(msg.Labels.delA_norm,
-                                   fontsize=self.label_size, family=self.font_family)
+                                   fontsize=self.label_size, fontproperties=self.font_property)
                     norm_intervall = _get_norm_intervall(data=self.buffer_dataX)
                     data /= np.amax(abs(data[norm_intervall, :]), axis=0)
 
@@ -2565,10 +2698,13 @@ class VisualizeTab(QWidget):
                 labels_tex = [f'${label}$' for label in labels]
                 ax1 = self.fig.add_subplot(111)
                 ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
-                ax1.set_xlabel(msg.Labels.delay, fontsize=self.label_size, family=self.font_family)
-                ax1.set_ylabel(r'Concentration', fontsize=self.label_size, family=self.font_family)
-                ax1.tick_params(labelleft=True, right=True,
-                                labelsize=self.tick_size, labelfontfamily=self.font_family)
+                ax1.set_xlabel(msg.Labels.delay, fontsize=self.label_size,
+                               fontproperties=self.font_property)
+                ax1.set_ylabel(r'Concentration', fontsize=self.label_size,
+                               fontproperties=self.font_property)
+                ax1.tick_params(labelleft=True, right=True)
+                plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
 
                 # ----- set axis scale -----
                 _init_bounds(normalized=True, absolute=True)
@@ -2608,10 +2744,12 @@ class VisualizeTab(QWidget):
 
                 ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
                 ax1.set_xlabel(msg.Labels.wavelength,
-                               fontsize=self.label_size, family=self.font_family)
-                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-                ax1.tick_params(labelleft=True, right=True,
-                                labelsize=self.tick_size, labelfontfamily=self.font_family)
+                               fontsize=self.label_size, fontproperties=self.font_property)
+                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size,
+                               fontproperties=self.font_property)
+                ax1.tick_params(labelleft=True, right=True)
+                plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
                 _init_bounds()
                 ax1.xaxis.set_minor_locator(tk.AutoMinorLocator())
                 _set_axes_scale(axes=ax1, xlim=(self.x_min, self.x_max), ylim=(
@@ -2674,11 +2812,12 @@ class VisualizeTab(QWidget):
                     ax1 = self.fig.add_subplot(111)
 
                 ax1.axhline(y=0, linestyle='dashed', color='black', alpha=0.5)
-                ax1.set_xlabel(msg.Labels.delay,
-                               fontsize=self.label_size, family=self.font_family)
-                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size, family=self.font_family)
-                ax1.tick_params(labelleft=True, right=True,
-                                labelsize=self.tick_size, labelfontfamily=self.font_family)
+
+                ax1.set_ylabel(msg.Labels.delA, fontsize=self.label_size,
+                               fontproperties=self.font_property)
+                ax1.tick_params(labelleft=True, right=True)
+                plt.setp(ax1.xaxis.get_majorticklabels() + ax1.yaxis.get_majorticklabels(),
+                         fontproperties=self.font_property, fontsize=self.tick_size)
 
                 # ----- set axis scale -----
                 self.check_z_input(update_all=self.tw_global_fit_properties[4])
@@ -2690,7 +2829,7 @@ class VisualizeTab(QWidget):
                 # ----- set normalization params -----
                 if normalize:
                     ax1.set_ylabel(msg.Labels.delA_norm,
-                                   fontsize=self.label_size, family=self.font_family)
+                                   fontsize=self.label_size, fontproperties=self.font_property)
                     norm_intervall = _get_norm_intervall(data=self.buffer_dataY)
 
                     delA_calc = fit_dict[ukey]['delA_calc'].copy()
@@ -2726,6 +2865,14 @@ class VisualizeTab(QWidget):
                     for i, ind in enumerate(ind_wavelengths_found):
                         ax2.plot(self.buffer_dataY, delA_calc[:, ind] - self.buffer_dataZ[:, ind],
                                  color=colorlist[i], )
+                    ax2.tick_params(labelleft=True, right=True)
+                    plt.setp(ax2.xaxis.get_majorticklabels() + ax2.yaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    ax2.set_xlabel(msg.Labels.delay,
+                                   fontsize=self.label_size, fontproperties=self.font_property)
+                else:
+                    ax1.set_xlabel(msg.Labels.delay,
+                                   fontsize=self.label_size, fontproperties=self.font_property)
 
                 if self.tw_global_fit_properties[4].w_show_legend.check_show_legend.isChecked():
                     _show_legend(axes=ax1, title='Wavelength',
@@ -2761,13 +2908,14 @@ class VisualizeTab(QWidget):
                     elif name == "IRF":
                         labels.append("IRF (s)")
                     elif name.startswith("t") and name[1:].isdigit():
-                        labels.append(fr"$t_{name[1:]}$ (s)")
+                        labels.append(fr"$τ_{name[1:]}$ (s)")
                     elif name.startswith("__ln"):
                         labels.append(r"ln(σ/mOD)")
                     else:
                         labels.append(name)        # fallback
 
-                subplot_spacing = self.tw_properties.w_current_properties.w_corner_manipulation.sb_subplot_pad.value() / 100
+                subplot_spacing = self.tw_properties.w_current_properties.w_corner_manipulation.sb_subplot_pad.value() / \
+                    100
                 bins = self.tw_properties.w_current_properties.w_corner_manipulation.sb_bins.value()
                 label_pad = self.tw_properties.w_current_properties.w_corner_manipulation.sb_label_pad.value() / 100
                 max_n_ticks = self.tw_properties.w_current_properties.w_corner_manipulation.sb_tick_num.value()
@@ -2789,6 +2937,8 @@ class VisualizeTab(QWidget):
                 diagonal_axes = np.diag(axes)
 
                 if show_titles:
+                    fp_title = self.font_property.copy()
+                    fp_title.set_size(self.label_size)
                     for i, ax in enumerate(diagonal_axes):
                         data = flatchain[:, i]
                         median = np.median(data)
@@ -2797,24 +2947,23 @@ class VisualizeTab(QWidget):
                             self.sc.emcee_formatter(median),
                             self.sc.emcee_formatter(qhigh - median),
                             self.sc.emcee_formatter(median - qlow))
-                        ax.set_title(title_str, size=self.label_size,
-                                     family=self.font_family,)
+                        ax.set_title(title_str, fontproperties=fp_title)
 
                 bottom_row = axes[-1, :]
                 for ax in bottom_row:
                     ax.xaxis.set_major_formatter(self.sc.emcee_formatter)
-                    ax.tick_params(axis='x', labelsize=self.tick_size,
-                                   labelfontfamily=self.font_family)
+                    plt.setp(ax.xaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    ax.xaxis.label.set_fontproperties(self.font_property)
                     ax.xaxis.label.set_fontsize(self.label_size)
-                    ax.xaxis.label.set_family(self.font_family)
 
                 left_column = axes[:, 0]
                 for ax in left_column:
                     ax.yaxis.set_major_formatter(self.sc.emcee_formatter)
-                    ax.tick_params(axis='y', labelsize=self.tick_size,
-                                   labelfontfamily=self.font_family)
+                    plt.setp(ax.yaxis.get_majorticklabels(),
+                             fontproperties=self.font_property, fontsize=self.tick_size)
+                    ax.yaxis.label.set_fontproperties(self.font_property)
                     ax.yaxis.label.set_fontsize(self.label_size)
-                    ax.yaxis.label.set_family(self.font_family)
 
                 f.tight_layout()
 

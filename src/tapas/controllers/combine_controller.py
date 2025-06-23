@@ -256,16 +256,19 @@ class CombineController(QObject):
 
     def combine_ds(self, overlap_use: int, interpol_method: str, extrapol_method: str) -> None:
         '''
-        combines the two datasets cached by load_project depending on the method
-        and overlap_use. If called by 'pb_apply_combine_projects'
-        model will be updated with new ds and rawdata
+        Resample two cached 2-D datasets onto a common grid, resolve any spatial
+        overlap, and optionally extrapolate into gaps.
 
         Parameters
         ----------
-        overlap_use : int
-            0: use p1, 1: use p2, 2:merge
-        method : str
-            interpolation method used by scipy.
+        overlap_use : {0, 1, 2}
+            Policy for resolving duplicate grid points (see table above).
+        interpol_method : str
+            Interpolation kernel passed to ``scipy.interpolate.interpn``.
+            GUI alias *“bicubic”* is internally converted to ``"splinef2d"``.
+        extrapol_method : str
+            ``"zero"`` to fill all remaining NaNs with 0; anything else delegates
+            to 1D_interp.
 
         Returns
         -------

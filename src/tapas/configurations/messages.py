@@ -107,12 +107,12 @@ class ToolTips:
     t39 = 'correct for chirp'
     t40 = 'delete chirp correction preview'
     t41 = 'delete resampling preview'
-    t42 = 'substract averaged area of intervall'
+    t42 = 'subtract averaged area of intervall'
     t43 = 'delay intervall used to calculate background'
-    t44 = 'substract background up to delay'
+    t44 = 'subtract background up to delay'
     t45 = 'average background data using'
-    t46 = 'substract surface from hdf project'
-    t47 = 'substract solvent surface imported to this project'
+    t46 = 'subtract surface from hdf project'
+    t47 = 'subtract solvent surface imported to this project'
     t48 = 'delete previewed correction'
     t49 = 'delete previewed filter'
     t50 = 'preview filter'
@@ -167,7 +167,7 @@ class ToolTips:
     t98 = 'save current figure'
     t99 = 'select font from list of installed fonts on your os'
     t100 = 'choose image file format'
-    t101 = 'number of leading singular components do calculate and plot'
+    t101 = 'number of leading singular components to calculate and plot'
     t102 = 'change plotting limits to the given intervals'
     t103 = 'select wavelength which will be fitted'
     t104 = 'define an area around target wavelength which will be averaged'
@@ -197,9 +197,34 @@ class ToolTips:
             '2) initial run\n'
             '3) owards additional runs to satisfy target ratio')
     t124 = 'cancel evaluation after the next run'
+    t125 = 'Number of RK4 sub-steps to take within each interval'
+    t126 = 'define the structure of the imported 2D matrix'
+    t127 = 'plot either the fitted 2D map, the residuals or a combination of both'
+    t128 = 'below the noise threshold the residual structure is not displayed'
+    t129 = 'Histogram resolution: number of bins used for each 1-D distribution'
+    t130 = 'Extra space between axis label and ticks (in points)'
+    t131 = 'Gap between subplots, given as a fraction of the panel size'
+    t132 = 'Upper limit on tick marks per axis to keep labels readable'
+    t133 = 'Reference values to mark with lines in every subplot'
+    t134 = 'Show median ± σ statistics as titles on the diagonal plots'
+    t135 = 'Percentiles to draw as vertical lines (16 % & 84 %)'
+    t136 = 'Overlay individual sample points on the 2-D panels'
+    t137 = 'Draw confidence-level contours on the 2-D histograms'
+    t138 = 'Fill 2-D histograms with shaded density'
+    t139 = 'model coherent artefacts'
+    t140 = ('zero order: use the Gaussian IRF to model the CA\n'
+            'zero + first order: use the Gaussian IRF and the 1st derivative to model the CA')
+
 
 class Status:
-    s00 = f'TAPAS: Transient Absorption Processing & Analysis Software\n\nTAPAS Version {__version__} stable\n\nPython 3.11.11\nPyQT 6.9\n\nCopyright © 2025 Philipp Frech\nUniversity of Tübingen\n\n'+ ('_' * 50)+'\n\nLicensed under GPL-3.0-or-later\n'
+    s_splash = [
+        "Loading core modules…",
+        "Initializing analysis engine…",
+        "Warming up computational backend…",
+        "Preparing user interface…",
+        "Almost there…",
+        "First launch cached — next start will be faster!"]
+    s00 = f'TAPAS: Transient Absorption Processing & Analysis Software\n\nTAPAS Version {__version__} stable\n\nPython 3.11.11\nPyQt 6.9\n\nCopyright © 2025 Philipp Frech\nUniversity of Tübingen\n\n'+ ('_' * 50)+'\n\nLicensed under GPL-3.0-or-later\n'
     s01 = 'path changed'
     s02 = 'data fetched'
     s03 = 'data cleared'
@@ -207,12 +232,12 @@ class Status:
     s05 = 'minimum zoom reached'
     s06 = 'project saved'
     s07 = 'project loaded'
-    s08 = 'background substracted in plot'
+    s08 = 'background subtracted in plot'
     s09 = 'background applied to dataset'
     s10 = 'chirp function calculated'
     s11 = 'chirp function deleted'
     s12 = 'chirp function applied'
-    s13 = 'trimm applied to dataset'
+    s13 = 'trim applied to dataset'
     s14 = 'filter applied in plot'
     s15 = 'filter applied to dataset'
     s16 = 'configuration file loaded'
@@ -236,7 +261,7 @@ class Status:
     s34 = 'emcee analysis will start now'
     s35 = 'emcee analysis will be aborted after the next run. Please wait'
     s36 = 'emcee results saved to project'
-
+    
 
 class Error:
     e01 = 'unknown exception occurred. See log for more detail'

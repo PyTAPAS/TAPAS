@@ -69,7 +69,7 @@ class ImportProjectsWidget(QWidget):
         self.pb_browse_p1.setToolTip(msg.ToolTips.t09)
         self.cb_ds_p1 = QComboBox(self)
         self.cb_ds_p1.addItems(('raw', 'ds 1', 'ds 2', 'ds 3'))
-        self.pb_load_p1 = QPushButton("load", objectName='pb_load_p1')
+        self.pb_load_p1 = QPushButton("Load", objectName='pb_load_p1')
         self.pb_load_p1.setToolTip(msg.ToolTips.t15)
         self.le_x_range_p1 = QLineEdit(text="None", readOnly=True)
         self.le_x_range_p1.setToolTip(msg.ToolTips.t56)
@@ -77,7 +77,7 @@ class ImportProjectsWidget(QWidget):
         self.le_y_range_p1 = QLineEdit(text="None", readOnly=True)
         self.le_y_range_p1.setToolTip(msg.ToolTips.t56)
         self.le_y_range_p1.setMaximumWidth(100)
-        self.pb_clear_p1 = QPushButton("clear", objectName='pb_clear_p1')
+        self.pb_clear_p1 = QPushButton("Clear", objectName='pb_clear_p1')
         self.pb_clear_p1.setToolTip(msg.ToolTips.t57)
 
         self.le_path_p2 = FileDropLineEdit(self, placeholderText=msg.Widgets.i14,
@@ -89,7 +89,7 @@ class ImportProjectsWidget(QWidget):
         self.pb_browse_p2.setToolTip(msg.ToolTips.t09)
         self.cb_ds_p2 = QComboBox(self)
         self.cb_ds_p2.addItems(('raw', 'ds 1', 'ds 2', 'ds 3'))
-        self.pb_load_p2 = QPushButton("load", objectName='pb_load_p2')
+        self.pb_load_p2 = QPushButton("Load", objectName='pb_load_p2')
         self.pb_load_p2.setToolTip(msg.ToolTips.t15)
         self.le_x_range_p2 = QLineEdit(text="None", readOnly=True)
         self.le_x_range_p2.setToolTip(msg.ToolTips.t56)
@@ -97,7 +97,7 @@ class ImportProjectsWidget(QWidget):
         self.le_y_range_p2 = QLineEdit(text="None", readOnly=True)
         self.le_y_range_p2.setToolTip(msg.ToolTips.t56)
         self.le_y_range_p2.setMaximumWidth(100)
-        self.pb_clear_p2 = QPushButton("clear", objectName='pb_clear_p2')
+        self.pb_clear_p2 = QPushButton("Clear", objectName='pb_clear_p2')
         self.pb_clear_p2.setToolTip(msg.ToolTips.t57)
 
         # add Widgets to Layout

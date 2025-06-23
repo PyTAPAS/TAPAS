@@ -281,7 +281,7 @@ class GlobalFitController(QObject):
         def _jacobian_model_wrapper(raw_theta: NDArray, delay: NDArray, delA: NDArray, Ainf: bool,
                                     model: str, weights: NDArray, use_threshold_t0: bool,
                                     substeps: int = 10, gs: bool = False, use_bleach=False,
-                                    gs_spec=False,  output: bool = False, **kwargs) -> "model function":
+                                    gs_spec=False, ca_order: int = 0, output: bool = False, **kwargs) -> "model function":
             '''
             wrapper for the jacobian calculation. transforms t0 for the XLA model fitting and returns model function
 
@@ -342,16 +342,16 @@ class GlobalFitController(QObject):
             if model == 'parallel':
                 return model_function(
                     theta=theta, delay=delay, delA=delA, Ainf=Ainf, weights=weights, gs=gs,
-                    use_bleach=use_bleach, gs_spec=gs_spec,  output=output)
+                    use_bleach=use_bleach, gs_spec=gs_spec, ca_order=ca_order,  output=output)
 
             else:
                 return model_function(
                     theta=theta, delay=delay, delA=delA, Ainf=Ainf, weights=weights,
-                    substeps=substeps, gs=gs, use_bleach=use_bleach, gs_spec=gs_spec, output=output)
+                    substeps=substeps, gs=gs, use_bleach=use_bleach, gs_spec=gs_spec, ca_order=ca_order, output=output)
 
         self.jacobian_func = jit(jacfwd(
             _jacobian_model_wrapper, argnums=0), static_argnames=('Ainf', 'model', 'use_threshold_t0',
-                                                                  'substeps', 'gs', 'use_bleach', 'output'))
+                                                                  'substeps', 'gs', 'use_bleach', 'ca_order', 'output'))
 
     @staticmethod
     def model_theta_log_posterior_wrapper(params: Parameters,
@@ -361,7 +361,7 @@ class GlobalFitController(QObject):
                                           model: str,
                                           weights: NDArray,
                                           use_threshold_t0: bool,
-                                          substeps: int = 10,  gs=False, gs_spec=False,
+                                          substeps: int = 6,  gs=False, gs_spec=False, ca_order=0,
                                           n_eff: int | float = 1.0, **extra) -> float:
         '''
         Return scalar *log‑posterior* for lmfit–emcee (float_behavior='posterior')
@@ -417,10 +417,10 @@ class GlobalFitController(QObject):
         use_bleach = True if gs_spec is not False else False
         if model == 'parallel':
             resid = model_function(theta, delay, delA, Ainf, weights,
-                                   gs, use_bleach, gs_spec, output=False)
+                                   gs, use_bleach, gs_spec, ca_order=ca_order, output=False)
         else:
             resid = model_function(theta, delay, delA, Ainf, weights,
-                                   substeps,  gs, use_bleach, gs_spec, output=False)
+                                   substeps,  gs, use_bleach, gs_spec, ca_order=ca_order,  output=False)
 
         # -------- calculate Gaussian log-likelihood with effective sample size --------------------
         ssr = jnp.dot(resid, resid)
@@ -790,19 +790,19 @@ class GlobalFitController(QObject):
             # Define the ordering: t1, t2, ..., t_components, then t0 and IRF.
             if gs_spec is False:
                 return jnp.array([t0_centroid, fwhm] +
-                                 [params[f't{i}'].value for i in range(1, len(params)-1)])
+                                 [params[f'τ{i}'].value for i in range(1, len(params)-1)])
             else:
                 return jnp.array([t0_centroid, fwhm] +
-                                 [params[f't{i}'].value for i in range(1, len(params)-3)] +
+                                 [params[f'τ{i}'].value for i in range(1, len(params)-3)] +
                                  [gs_shift, gs_sigma])
 
         else:
             if gs_spec is False:
                 return jnp.array([t0_centroid, fwhm] +
-                                 [params[f't{i}'].value for i in range(1, len(params)-2)])
+                                 [params[f'τ{i}'].value for i in range(1, len(params)-2)])
             else:
                 return jnp.array([t0_centroid, fwhm] +
-                                 [params[f't{i}'].value for i in range(1, len(params)-4)] +
+                                 [params[f'τ{i}'].value for i in range(1, len(params)-4)] +
                                  [gs_shift, gs_sigma])
 
     @staticmethod
@@ -834,7 +834,7 @@ class GlobalFitController(QObject):
     @staticmethod
     def model_theta_wrapper(params: Parameters, delay: NDArray, delA: NDArray, Ainf: bool,
                             model: str, weights: NDArray, use_threshold_t0: bool,
-                            substeps: int = 10,  gs=False, gs_spec=False,
+                            substeps: int = 10,  gs=False, gs_spec=False, ca_order: int = 0,
                             output: bool = False,) -> NDArray | tuple[NDArray, NDArray, NDArray]:
         '''
         wrapps lmfit parameters object and model function to XLA compartiple code.
@@ -879,16 +879,16 @@ class GlobalFitController(QObject):
         use_bleach = True if gs_spec is not False else False
         if model == 'parallel':
             return model_function(
-                theta, delay, delA, Ainf, weights, gs, use_bleach, gs_spec, output)
+                theta, delay, delA, Ainf, weights, gs, use_bleach, gs_spec, ca_order, output)
 
         else:
             return model_function(
-                theta, delay, delA, Ainf, weights, substeps, gs, use_bleach, gs_spec,  output)
+                theta, delay, delA, Ainf, weights, substeps, gs, use_bleach, gs_spec, ca_order, output)
 
     def optimize_params(
             self, params: Parameters, ds: str, Ainf: bool,  model: str, method: str,
             weights: NDArray, use_threshold_t0: bool, substeps: int = 10,
-            gs: bool = False, gs_spec: bool | NDArray = False) -> dict:
+            gs: bool = False, gs_spec: bool | NDArray = False, ca_order: int = 0) -> dict:
         '''
         performs the minimization of the objective model function and returns a dict with the
         optimized parameters and metadata
@@ -942,7 +942,7 @@ class GlobalFitController(QObject):
         minner = Minimizer(self.model_theta_wrapper, params,  fcn_kws={
                            'delay': delay, 'delA': delA,  'Ainf': Ainf,  'model': model,
                            'weights': jnp.array(weights), 'use_threshold_t0': use_threshold_t0,
-                           'substeps': substeps, 'gs': gs, 'gs_spec': gs_spec, 'output': False, })
+                           'substeps': substeps, 'gs': gs, 'gs_spec': gs_spec, 'ca_order': ca_order, 'output': False, })
 
         # -------- perform the minimization --------------------------------------------------------
         try:
@@ -980,12 +980,13 @@ class GlobalFitController(QObject):
         fit_results['meta']['substeps'] = substeps
         fit_results['meta']['gs'] = gs
         fit_results['meta']['gs_spec'] = gs_spec
+        fit_results['meta']['ca_order'] = ca_order
         fit_results['meta']['time_zero_convention'] = '5% threshold' if use_threshold_t0 else 'Gaussian centroid'
         fit_results['meta']['use_threshold_t0'] = use_threshold_t0
         num_comp = (len(fit_results['theta']) -
                     2) if gs_spec is False else (len(fit_results['theta'])-4)
         labels = self.get_component_labels(
-            model=fit_results['meta']['model'], Ainf=fit_results['meta']['Ainf'], num=num_comp, gs=gs)
+            model=fit_results['meta']['model'], Ainf=fit_results['meta']['Ainf'], num=num_comp, gs=gs, ca_order=fit_results['meta']['ca_order'])
         fit_results['meta']['components'] = labels
 
         # -------- cache data for subsequent fit statistics  ---------------------------------------
@@ -995,7 +996,7 @@ class GlobalFitController(QObject):
 
         return fit_results
 
-    def get_component_labels(self, model: str, Ainf: bool, num: int, gs: bool = False) -> list[str]:
+    def get_component_labels(self, model: str, Ainf: bool, num: int, gs: bool = False, ca_order: int = 0, local : bool = False) -> list[str]:
         '''
         returns a list of component names depending on the input
 
@@ -1009,6 +1010,8 @@ class GlobalFitController(QObject):
             number of components.
         gs : bool, optional
             Whether to include an explicit ground-state component in the fit.
+        local : bool, optional
+            true, when called by local fit, uses different naming convention
 
         Returns
         -------
@@ -1017,32 +1020,40 @@ class GlobalFitController(QObject):
 
         '''
         labels = []
+        if ca_order:
+            labels += [f'CA_{i}' for i in range(ca_order)]
+        if local:
+            labels += [f'C_{i + 1}' for i in range(num)]
+            if Ainf:
+                labels.append('C_{inf}')
+            return labels
+        
         if model == 'sequential':
-            labels = [f'EAS {i + 1}' for i in range(num)]
+            labels += [f'EAS_{i + 1}' for i in range(num)]
             if Ainf:
                 labels.append('EAS_{inf}')
         elif model == 'parallel':
-            labels = [f'DAS {i + 1}' for i in range(num)]
+            labels += [f'DAS_{i + 1}' for i in range(num)]
             if Ainf:
                 labels.append('DAS_{inf}')
         elif model == '2C_3k_1':
-            labels = ['A', 'B']
+            labels += ['A', 'B']
             if Ainf:
                 labels.append('C_{inf}')
         elif model == '3C_5k_1':
-            labels = ['A', 'B', 'C']
+            labels += ['A', 'B', 'C']
             if Ainf:
                 labels.append('D_{inf}')
         elif model == '3C_4k_1':
-            labels = ['A', 'B', 'C']
+            labels += ['A', 'B', 'C']
             if Ainf:
-                labels.append('D_{inf}')
+                labels.append('D_{inf}')     
         elif model == '4C_6k_1':
-            labels = ['A', 'B', 'C', 'D']
+            labels += ['A', 'B', 'C', 'D']
             if Ainf:
-                labels.append('E_{inf}')
+                labels.append('E_{inf}')   
         else:
-            labels = [f'C {i + 1}' for i in range(num)]
+            labels += [f'C_{i + 1}' for i in range(num)]
             if Ainf:
                 labels.append('C_{inf}')
         if gs:
@@ -1192,14 +1203,14 @@ class GlobalFitController(QObject):
                 Ainf=fit_results['meta']['Ainf'],  model='sequential', weights=fit_results['weight_vector'],
                 use_threshold_t0=fit_results['meta']['use_threshold_t0'],
                 substeps=fit_results['meta']['substeps'], gs=fit_results['meta']['gs'],
-                gs_spec=fit_results['meta']['gs_spec'], output=True)
+                gs_spec=fit_results['meta']['gs_spec'], ca_order=fit_results['meta']['ca_order'], output=True)
 
             _, _, fit_results['DAS'] = self.model_theta_wrapper(
                 params=fit_results['opt_params'], delay=self.current_delay, delA=self.current_delA,
                 Ainf=fit_results['meta']['Ainf'],  model='parallel', weights=fit_results['weight_vector'],
                 use_threshold_t0=fit_results['meta']['use_threshold_t0'],
                 substeps=fit_results['meta']['substeps'], gs=fit_results['meta']['gs'],
-                gs_spec=fit_results['meta']['gs_spec'], output=True)
+                gs_spec=fit_results['meta']['gs_spec'], ca_order=fit_results['meta']['ca_order'], output=True)
 
         elif fit_results['meta']['model'] == 'parallel':
             fit_results['delA_calc'], fit_results['conc'], fit_results['DAS'],  = self.model_theta_wrapper(
@@ -1207,14 +1218,14 @@ class GlobalFitController(QObject):
                 Ainf=fit_results['meta']['Ainf'],  model='parallel', weights=fit_results['weight_vector'],
                 use_threshold_t0=fit_results['meta']['use_threshold_t0'],
                 substeps=fit_results['meta']['substeps'], gs=fit_results['meta']['gs'],
-                gs_spec=fit_results['meta']['gs_spec'], output=True)
+                gs_spec=fit_results['meta']['gs_spec'], ca_order=fit_results['meta']['ca_order'], output=True)
 
             _, _, fit_results['EAS'] = self.model_theta_wrapper(
                 params=fit_results['opt_params'], delay=self.current_delay, delA=self.current_delA,
                 Ainf=fit_results['meta']['Ainf'],  model='sequential', weights=fit_results['weight_vector'],
                 use_threshold_t0=fit_results['meta']['use_threshold_t0'],
                 substeps=fit_results['meta']['substeps'], gs=fit_results['meta']['gs'],
-                gs_spec=fit_results['meta']['gs_spec'], output=True)
+                gs_spec=fit_results['meta']['gs_spec'], ca_order=fit_results['meta']['ca_order'], output=True)
 
         else:
             fit_results['delA_calc'], fit_results['conc'], fit_results['SAS'],  = self.model_theta_wrapper(
@@ -1222,7 +1233,7 @@ class GlobalFitController(QObject):
                 Ainf=fit_results['meta']['Ainf'],  model=fit_results['meta']['model'],
                 weights=fit_results['weight_vector'], use_threshold_t0=fit_results['meta']['use_threshold_t0'],
                 substeps=fit_results['meta']['substeps'], gs=fit_results['meta']['gs'],
-                gs_spec=fit_results['meta']['gs_spec'], output=True)
+                gs_spec=fit_results['meta']['gs_spec'], ca_order=fit_results['meta']['ca_order'], output=True)
 
         t_end = time.time()
         fit_results['meta']['fit_time'] += (t_end-t_start)
@@ -1239,7 +1250,7 @@ class GlobalFitController(QObject):
         mean_delA = (self.current_delA*weights2D).sum() / weights2D.sum()
         SST_weighted = ((self.current_delA - mean_delA)**2 * weights2D).sum()
         fit_results['meta']['r2'] = np.round(1 - fit_results['meta']['SSR'] / SST_weighted, 8)
-        fit_results['meta']['rsme'] = np.sqrt(np.mean(fit_results['residuals']**2))
+        fit_results['meta']['rmse'] = np.sqrt(np.mean(fit_results['residuals']**2))
         fit_results['meta']['mea'] = np.mean(np.abs(fit_results['residuals']))
 
         # -------- estimate autocorrelation (lag-1 + IAC) of residuals & effective sample size -----
@@ -1261,15 +1272,26 @@ class GlobalFitController(QObject):
         param_items = list(fit_results['opt_params'].items())
 
         vary_mask = jnp.array([par.vary for name, par in param_items])
+
         use_bleach = True if fit_results['meta']['gs_spec'] is not False else False
-        jacobian = self.jacobian_func(fit_results['theta'], self.current_delay, self.current_delA,
-                                      fit_results['meta']['Ainf'],  fit_results['meta']['model'],
-                                      fit_results['weight_vector'], fit_results['meta']['use_threshold_t0'],
-                                      fit_results['meta']['substeps'], fit_results['meta']['gs'], use_bleach,
-                                      fit_results['meta']['gs_spec'])
+        jacobian = self.jacobian_func(
+            fit_results["theta"],
+            self.current_delay,
+            self.current_delA,
+            Ainf=fit_results["meta"]["Ainf"],
+            model=fit_results["meta"]["model"],
+            weights=fit_results["weight_vector"],
+            use_threshold_t0=fit_results["meta"]["use_threshold_t0"],
+            substeps=fit_results["meta"]["substeps"],
+            gs=fit_results["meta"]["gs"],
+            use_bleach=use_bleach,
+            gs_spec=fit_results["meta"]["gs_spec"],
+            ca_order=fit_results["meta"]["ca_order"],
+            output=False)
 
         jacobian_free = jacobian[:, vary_mask]
         scale_free = self._scale_from_guess(fit_results['opt_params'])
+
         J_scaled = jacobian_free * scale_free[None, :]
         JTJ_scaled = J_scaled.T @ J_scaled
         eigs = jnp.linalg.eigvalsh(JTJ_scaled)
@@ -1305,7 +1327,7 @@ class GlobalFitController(QObject):
             SST = ((self.current_delA - self.current_delA.mean())**2).sum()
             fit_results['meta']['unweighted_r2'] = 1 - \
                 fit_results['meta']['unweighted_SSR'] / SST
-            fit_results['meta']['unweighted_rsme'] = np.sqrt(
+            fit_results['meta']['unweighted_rmse'] = np.sqrt(
                 np.mean(fit_results['unweighted_residuals']**2))
             fit_results['meta']['unweighted_mea'] = np.mean(
                 np.abs(fit_results['unweighted_residuals']))
@@ -1322,10 +1344,19 @@ class GlobalFitController(QObject):
 
         # -------- calculate the scaled jacobian of the varied parameters (unweighted)--------------
             jacobian = self.jacobian_func(
-                fit_results['theta'], self.current_delay, self.current_delA,
-                fit_results['meta']['Ainf'],  fit_results['meta']['model'], weight_dummy,
-                fit_results['meta']['use_threshold_t0'], fit_results['meta']['substeps'],
-                fit_results['meta']['gs'], use_bleach, fit_results['meta']['gs_spec'])
+                fit_results["theta"],
+                self.current_delay,
+                self.current_delA,
+                Ainf=fit_results["meta"]["Ainf"],
+                model=fit_results["meta"]["model"],
+                weights=weight_dummy,
+                use_threshold_t0=fit_results["meta"]["use_threshold_t0"],
+                substeps=fit_results["meta"]["substeps"],
+                gs=fit_results["meta"]["gs"],
+                use_bleach=use_bleach,
+                gs_spec=fit_results["meta"]["gs_spec"],
+                ca_order=fit_results["meta"]["ca_order"],
+                output=False)
             jacobian_free = jacobian[:, vary_mask]
             J_scaled = jacobian_free * scale_free[None, :]
             JTJ_scaled = J_scaled.T @ J_scaled
@@ -1505,7 +1536,7 @@ class GlobalFitController(QObject):
             fitting_print += f"Model: {fit_results['meta']['model']}\n"
             fitting_print += f"r²: {fit_results['meta']['r2']:.3f}\n"
             fitting_print += f"SSR: {fit_results['meta']['SSR']:.2f}\n"
-            fitting_print += f"RSME: {fit_results['meta']['rsme']:.3f} mOD\n"
+            fitting_print += f"RMSE: {fit_results['meta']['rmse']:.3f} mOD\n"
             fitting_print += f"MEA: {fit_results['meta']['mea']:.3f} mOD\n"
             fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['n_eff']:.0f} (effective)\n"
             fitting_print += f"eff residual var: {fit_results['meta']['var_resid_eff']:.2f}\n"
@@ -1523,14 +1554,25 @@ class GlobalFitController(QObject):
             fitting_print += "errors could not be calculated:\nnon-stable derivatives\n"
             fitting_print += '\n--- PARAMETERS: ---\n'
             for k, v in fit_results['opt_params'].valuesdict().items():
-                value_str = value_formatter(v)
-                fitting_print += f"{k}: {value_str}s\n"
+                par = fit_results['opt_params'][k]
+                if not par.vary:
+                    # Fixed parameter
+                    value_str = value_formatter(v)
+                    fitting_print += f"{k}: {value_str} (fixed)\n"
+                else:
+                    # Fitted parameter
+                    value_str = value_formatter(v)
+                    fitting_print += (f"{k}: {value_str}s\n")
+            if fit_results['meta']['Ainf']:
+                fitting_print += 'Ainf:  True\n'
+            else:
+                fitting_print += 'Ainf:  False\n'
 
             fitting_print += '\n--- FIT METRICS: ---\n'
             fitting_print += f"Model: {fit_results['meta']['model']}\n"
             fitting_print += f"r²: {fit_results['meta']['r2']:.3f}\n"
             fitting_print += f"SSR: {fit_results['meta']['SSR']:.2f}\n"
-            fitting_print += f"RSME: {fit_results['meta']['rsme']:.3f} mOD\n"
+            fitting_print += f"RMSE: {fit_results['meta']['rmse']:.3f} mOD\n"
             fitting_print += f"MEA: {fit_results['meta']['mea']:.3f} mOD\n"
             fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['n_eff']:.0f} (effective)\n"
             fitting_print += f"eff residual var: {fit_results['meta']['var_resid_eff']:.2f}\n"
@@ -1596,7 +1638,7 @@ class GlobalFitController(QObject):
                 fitting_print += '\n--- FIT METRICS: ---\n'
                 fitting_print += f"r²: {fit_results['meta']['unweighted_r2']:.3f}\n"
                 fitting_print += f"SSR: {fit_results['meta']['unweighted_SSR']:.2f}\n"
-                fitting_print += f"RSME: {fit_results['meta']['unweighted_rsme']:.3f} mOD\n"
+                fitting_print += f"RMSE: {fit_results['meta']['unweighted_rmse']:.3f} mOD\n"
                 fitting_print += f"MEA: {fit_results['meta']['unweighted_mea']:.3f} mOD\n"
                 fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['unweighted_n_eff']:.0f} (effective)\n"
                 fitting_print += f"eff residual var: {fit_results['meta']['unweighted_var_resid_eff']:.2f}\n"
@@ -1611,7 +1653,7 @@ class GlobalFitController(QObject):
                 fitting_print += '\n--- FIT METRICS: ---\n'
                 fitting_print += f"r²: {fit_results['meta']['unweighted_r2']:.3f}\n"
                 fitting_print += f"SSR: {fit_results['meta']['unweighted_SSR']:.2f}\n"
-                fitting_print += f"RSME: {fit_results['meta']['unweighted_rsme']:.3f} mOD\n"
+                fitting_print += f"RMSE: {fit_results['meta']['unweighted_rmse']:.3f} mOD\n"
                 fitting_print += f"MEA: {fit_results['meta']['unweighted_mea']:.3f} mOD\n"
                 fitting_print += f"data points: {fit_results['meta']['grid_points']} (total), {fit_results['meta']['unweighted_n_eff']:.0f} (effective)\n"
                 fitting_print += f"eff residual var: {fit_results['meta']['unweighted_var_resid_eff']:.2f} mOD\n"

@@ -50,7 +50,7 @@ class InputWidget(QWidget):
 
         self.w_components_params_layout = QGridLayout()
         self.w_components_params_layout.addWidget(
-            QLabel("Number of principal Components:"), 0, 0, )
+            QLabel("Number of Principal Components:"), 0, 0, )
         self.w_components_params_layout.addWidget(self.sb_components, 0, 1, )
         self.w_components_params.setLayout(self.w_components_params_layout)
 

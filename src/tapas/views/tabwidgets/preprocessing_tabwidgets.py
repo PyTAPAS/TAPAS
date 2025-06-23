@@ -46,7 +46,7 @@ class SelectViewWidget(QWidget):
         self.rb_ds_1.setChecked(True)
         self.rb_ds_2 = QRadioButton("Dataset 2", self, objectName='ds2')
         self.rb_ds_3 = QRadioButton("Dataset 3", self, objectName='ds3')
-        self.pb_clear_ds = QPushButton("Clear selected Dataset")
+        self.pb_clear_ds = QPushButton("Clear Selected Dataset")
         self.pb_clear_ds.setToolTip(msg.ToolTips.t19)
         self.pb_clear_ds.setMaximumWidth(200)
         self.w_ds_layout = QVBoxLayout()
@@ -118,7 +118,7 @@ class ProcessWidget(QWidget):
 
     def initUI(self):
 
-        self.w_trimm = QGroupBox('Trimm Data')
+        self.w_trimm = QGroupBox('Trim Data')
         self.w_trimm.setToolTip(msg.ToolTips.t23)
         self.le_xmin = QLineEdit(
             placeholderText=msg.Widgets.i10, maximumWidth=50)
@@ -134,7 +134,7 @@ class ProcessWidget(QWidget):
         self.w_trimm_layout = QGridLayout()
 
         self.w_trimm_layout.addWidget(
-            QLabel("wavelength", maximumWidth=90), 0, 0, )
+            QLabel("Wavelength", maximumWidth=90), 0, 0, )
         self.w_trimm_layout.addWidget(self.le_xmin, 0, 1)
         self.w_trimm_layout.addWidget(self.le_xmax, 0, 2)
         self.w_trimm_layout.addWidget(QLabel("Delay", maximumWidth=90), 1, 0)
@@ -145,7 +145,7 @@ class ProcessWidget(QWidget):
         self.w_trimm.setLayout(self.w_trimm_layout)
 
         self.w_resample = QGroupBox('Resampling')
-        self.pb_resample = QPushButton("resample", maximumWidth=130)
+        self.pb_resample = QPushButton("Resample", maximumWidth=130)
         self.pb_resample.setToolTip(msg.ToolTips.t25)
         self.le_min_resample = QLineEdit(
             placeholderText=msg.Widgets.i10, maximumWidth=50)
@@ -163,7 +163,7 @@ class ProcessWidget(QWidget):
         self.cb_resample_axis.addItems(['timepoints', 'wavelength'])
         self.cb_resample_axis.setToolTip(msg.ToolTips.t29)
 
-        self.pb_regularize = QPushButton("regularize", maximumWidth=130)
+        self.pb_regularize = QPushButton("Regularize", maximumWidth=130)
         self.pb_regularize.setToolTip(msg.ToolTips.t30)
         self.sb_regularize_points = QSpinBox(self, minimum=2, maximum=10000, value=3)
         self.sb_regularize_points.setToolTip(msg.ToolTips.t31)
@@ -184,19 +184,19 @@ class ProcessWidget(QWidget):
         self.w_resample_layout.addWidget(self.pb_resample, 0, 0)
         self.w_resample_layout.addWidget(self.le_min_resample, 0, 1)
         self.w_resample_layout.addWidget(self.le_max_resample, 0, 2)
-        self.w_resample_layout.addWidget(QLabel("factor"), 1, 1)
+        self.w_resample_layout.addWidget(QLabel("Factor"), 1, 1)
         self.w_resample_layout.addWidget(self.le_resample_factor, 1, 2)
-        self.w_resample_layout.addWidget(QLabel("axis"), 2, 1)
+        self.w_resample_layout.addWidget(QLabel("Axis"), 2, 1)
         self.w_resample_layout.addWidget(self.cb_resample_axis, 2, 2)
-        self.w_resample_layout.addWidget(QLabel("method"), 3, 1)
+        self.w_resample_layout.addWidget(QLabel("Method"), 3, 1)
         self.w_resample_layout.addWidget(self.cb_resample_method, 3, 2)
         self.w_resample_layout.addWidget(separator(), 4, 0, 1, 3)
         self.w_resample_layout.addWidget(self.pb_regularize, 5, 0)
-        self.w_resample_layout.addWidget(QLabel('datapoints'), 5, 1)
+        self.w_resample_layout.addWidget(QLabel('Datapoints'), 5, 1)
         self.w_resample_layout.addWidget(self.sb_regularize_points, 5, 2)
-        self.w_resample_layout.addWidget(QLabel("axis"), 6, 1)
+        self.w_resample_layout.addWidget(QLabel("Axis"), 6, 1)
         self.w_resample_layout.addWidget(self.cb_regularize_axis, 6, 2)
-        self.w_resample_layout.addWidget(QLabel("method"), 7, 1)
+        self.w_resample_layout.addWidget(QLabel("Method"), 7, 1)
         self.w_resample_layout.addWidget(self.cb_regularize_method, 7, 2)
         self.w_resample_layout.addWidget(separator(), 8, 0, 1, 3)
         self.w_resample_layout.addWidget(self.pb_delete_resample, 9, 1)
@@ -214,16 +214,16 @@ class ProcessWidget(QWidget):
         self.cb_threshold_unit.setToolTip(msg.ToolTips.t33)
 
         self.pb_manually_chirp = QPushButton(
-            "manually correct ", objectName='manual_chirp', maximumWidth=130)
+            "Manually Correct ", objectName='manual_chirp', maximumWidth=130)
         self.pb_manually_chirp.setToolTip(msg.ToolTips.t36)
         self.pb_manually_chirp.setCheckable(True)
-        self.pb_fit_chirp = QPushButton("fit ", maximumWidth=130)
+        self.pb_fit_chirp = QPushButton("Fit ", maximumWidth=130)
         self.pb_fit_chirp.setToolTip(msg.ToolTips.t37)
-        self.pb_del_chirp_fit = QPushButton("delete ", maximumWidth=130)
+        self.pb_del_chirp_fit = QPushButton("Delete ", maximumWidth=130)
         self.pb_del_chirp_fit.setToolTip(msg.ToolTips.t38)
 
         self.pb_fromfile_chirp = QPushButton(
-            "correct from project", maximumWidth=130)
+            "Correct from Project", maximumWidth=130)
         self.pb_fromfile_chirp.setToolTip(msg.ToolTips.t34)
         self.cb_fromfile_ds_chirp = QComboBox()
         self.cb_fromfile_ds_chirp.addItems(('ds 1', 'ds 2', 'ds 3'))
@@ -253,7 +253,7 @@ class ProcessWidget(QWidget):
         self.w_chirp.setLayout(self.w_chirp_layout)
 
         self.w_background = QGroupBox('Background Correction')
-        self.pb_corr_background = QPushButton("substract area", maximumWidth=130)
+        self.pb_corr_background = QPushButton("Subtract Area", maximumWidth=130)
         self.pb_corr_background.setToolTip(msg.ToolTips.t42)
         self.le_ymin_background = QLineEdit(
             placeholderText=msg.Widgets.i10, maximumWidth=50)
@@ -270,12 +270,12 @@ class ProcessWidget(QWidget):
         self.cb_background_method.addItem('median')
 
         self.pb_fromfile_background = QPushButton(
-            "substract from project")
+            "Subtract from Project")
         self.pb_fromfile_background.setToolTip(msg.ToolTips.t46)
         self.cb_fromfile_background = QComboBox()
         self.cb_fromfile_background.addItems(('raw', 'ds 1', 'ds 2', 'ds 3'))
         self.cb_fromfile_background.setToolTip(msg.ToolTips.t55)
-        self.pb_corr_from_solvent = QPushButton('substract solvent')
+        self.pb_corr_from_solvent = QPushButton('Subtract Solvent')
         self.pb_corr_from_solvent.setToolTip(msg.ToolTips.t47)
 
         self.pb_delete_background = QPushButton("Delete Correction", maximumWidth=130)
@@ -287,7 +287,7 @@ class ProcessWidget(QWidget):
         self.w_background_layout.addWidget(self.pb_corr_background, 0, 0)
         self.w_background_layout.addWidget(self.le_ymin_background, 0, 1)
         self.w_background_layout.addWidget(self.le_ymax_background, 0, 2)
-        self.w_background_layout.addWidget(QLabel("substract up to"), 1, 1)
+        self.w_background_layout.addWidget(QLabel("Subtract up to"), 1, 1)
         self.w_background_layout.addWidget(self.le_corr_max_background, 1, 2)
         self.w_background_layout.addWidget(QLabel("Method"), 2, 1)
         self.w_background_layout.addWidget(self.cb_background_method, 2, 2)
@@ -330,9 +330,9 @@ class ProcessWidget(QWidget):
         self.cb_filter_axis.addItems(['timepoints', 'wavelength'])
         self.cb_filter_axis.setToolTip(msg.ToolTips.t29)
 
-        self.pb_show_filter = QPushButton("Show filter")
+        self.pb_show_filter = QPushButton("Show Filter")
         self.pb_show_filter.setToolTip(msg.ToolTips.t45)
-        self.pb_delete_filter = QPushButton("Delete filter")
+        self.pb_delete_filter = QPushButton("Delete Filter")
         self.pb_delete_filter.setToolTip(msg.ToolTips.t49)
         self.pb_apply_savgol = QPushButton("Apply", objectName="apply_savgol", maximumWidth=80)
         self.pb_apply_savgol.setToolTip(msg.ToolTips.t24)

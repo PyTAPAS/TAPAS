@@ -140,7 +140,7 @@ class ImportController(QObject):
         return data_array, metadata_list
 
     def load_data(self, raw_ds: str, delimiter_idx: int, header: int, time_unit: int | bool = False,
-                  energy_unit: str | bool = False, delA_unit: bool | str = True) -> None:
+                  energy_unit: str | bool = False, delA_unit: bool | str = True, matrix_orientation: int = 0) -> None:
         '''
         loads the textfile(s), converts them to float32 arrays, detects metadata for TA experiments
         and dumps them to the metdata['notes']. Averages multiple TA files.
@@ -174,6 +174,9 @@ class ImportController(QObject):
             Unit of ΔA (change in absorbance) (default True → `'mOD'`):
             - `'mOD'` for milli‐optical‐density
             - `'OD'`  for optical‐density
+        matrix_orientation : int, optional
+            - 0     wavelength in column,
+            - 1     wavelength in row, default orientation in TAPAS
 
         Returns
         -------
@@ -229,12 +232,16 @@ class ImportController(QObject):
             average_data = np.average(all_data, axis=0)
 
             rawdata = {}
-            rawdata['wavelength'] = average_data[1:, 0] * \
-                SI_energy_unit  # wavelength SI (m)
-            rawdata['delay'] = average_data[0, 1:] * \
-                SI_time_factor  # delay time SI (s)
-            dataZ = np.transpose(
-                average_data[1:, 1:]) * SI_delA_unit  # mOD
+            rawdata['wavelength'] = average_data[1:, 0] * SI_energy_unit  # wavelength SI (m)
+            rawdata['delay'] = average_data[0, 1:] * SI_time_factor  # delay time SI (s)
+            if matrix_orientation == 0:
+                rawdata['wavelength'] = average_data[1:, 0] * SI_energy_unit  # wavelength SI (m)
+                rawdata['delay'] = average_data[0, 1:] * SI_time_factor  # delay time SI (s)
+                dataZ = np.transpose(average_data[1:, 1:]) * SI_delA_unit  # mOD
+            else:
+                rawdata['wavelength'] = average_data[0, 1:] * SI_energy_unit  # wavelength SI (m)
+                rawdata['delay'] = average_data[1:, 0] * SI_time_factor  # delay time SI (s)
+                dataZ = (average_data[1:, 1:]) * SI_delA_unit  # mOD
 
             rawdata['delA'] = np.nan_to_num(dataZ, nan=0)
 
