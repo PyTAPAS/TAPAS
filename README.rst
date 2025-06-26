@@ -108,7 +108,8 @@ and can be changed or extended to satify user specific needs. More information c
 Install from PyPI
 -----------------
 
-#.  Check Interpreter Version:
+#. Check Interpreter Version:
+
 This package requires ``Python=3.11`` due to our PyQt6 dependency::
 
       python --version
