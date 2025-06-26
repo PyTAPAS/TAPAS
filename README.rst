@@ -108,6 +108,14 @@ and can be changed or extended to satify user specific needs. More information c
 Install from PyPI
 -----------------
 
+#. Check Interpreter Version:
+
+   This package requires ``Python=3.11`` due to our PyQt6 dependency::
+
+      python --version
+      conda create -n myenv python=3.11
+      conda activate myenv
+
 #. Install via ``pip``::
 
       pip install pytapas
