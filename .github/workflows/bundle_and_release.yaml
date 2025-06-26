@@ -47,7 +47,7 @@ jobs:
    
           # Intel-Mac build     (x86 wheel → x86_64 bundle)
           - name: mac-intel
-            os: macos-12        # Intel runner
+            os: macos-13        # Intel runner
         
     steps:
       - uses: actions/checkout@v4
