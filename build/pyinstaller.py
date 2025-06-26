@@ -150,6 +150,8 @@ if icon_file and icon_file.exists():
     pyinstaller_args.extend(['--icon', str(icon_file)])
 if not sys.platform.startswith('win'):
     pyinstaller_args.append('--strip')
+if sys.platform == 'darwin':
+    pyinstaller_args += ['--target-arch', 'universal2']
 
 
 PyInstaller.__main__.run(pyinstaller_args)
