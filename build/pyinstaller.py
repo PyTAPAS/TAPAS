@@ -20,6 +20,7 @@ This file is part of TAPAS.
 
 import os
 import sys
+import platform   
 from pathlib import Path
 import PyInstaller.__main__
 import arviz  # imported to locate package data
@@ -151,7 +152,7 @@ if icon_file and icon_file.exists():
 if not sys.platform.startswith('win'):
     pyinstaller_args.append('--strip')
 if sys.platform == 'darwin':
-    pyinstaller_args += ['--target-arch', 'universal2']
+    pyinstaller_args += ["--target-arch", platform.machine()] 
 
 
 PyInstaller.__main__.run(pyinstaller_args)
