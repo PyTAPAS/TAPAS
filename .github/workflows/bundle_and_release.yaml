@@ -29,12 +29,25 @@ jobs:
 
 
   build:
-    name: Build & Package on ${{ matrix.os }}
+    name: Build & Package on ${{ matrix.name }}
     needs: prep
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        include:
+          - name: windows
+            os: windows-latest
+            
+          - name: linux
+            os: ubuntu-latest
+            
+          # Apple-Silicon build  (arm64 wheel → arm64 bundle)
+          - name: mac-arm
+            os: macos-14        # M-series runner
+   
+          # Intel-Mac build     (x86 wheel → x86_64 bundle)
+          - name: mac-intel
+            os: macos-12        # Intel runner
         
     steps:
       - uses: actions/checkout@v4
@@ -77,11 +90,10 @@ jobs:
       - name: Upload Build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tapas-${{ matrix.os == 'windows-latest' && 'windows' || matrix.os == 'ubuntu-latest' && 'linux' || 'macos' }}-v${{ needs.prep.outputs.version }}
-          path: |
-            dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
-            dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz
-            dist/tapas_${{ needs.prep.outputs.version }}-macos-*.tar.gz
+          # windows / linux / mac-arm / mac-intel
+          name: tapas-${{ matrix.name }}-v${{ needs.prep.outputs.version }}
+          # pick up the one archive that was created in this job
+          path: dist/tapas_${{ needs.prep.outputs.version }}-*.*   # .zip or .tar.gz
           retention-days: 5
 
   release:
