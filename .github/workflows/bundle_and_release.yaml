@@ -81,7 +81,7 @@ jobs:
           path: |
             dist/tapas_${{ needs.prep.outputs.version }}-windows.zip
             dist/tapas_${{ needs.prep.outputs.version }}-linux.tar.gz
-            dist/tapas_${{ needs.prep.outputs.version }}-macos.tar.gz
+            dist/tapas_${{ needs.prep.outputs.version }}-macos-*.tar.gz
           retention-days: 5
 
   release:
