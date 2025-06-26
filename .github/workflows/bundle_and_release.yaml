@@ -113,7 +113,7 @@ jobs:
         with:
           tag_name: v${{ needs.prep.outputs.version }}
           name: v${{ needs.prep.outputs.version }}
-          draft: false
+          draft: true
           prerelease: false
           files: |
             release-artifacts/**/*.zip
