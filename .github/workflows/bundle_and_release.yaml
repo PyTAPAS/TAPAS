@@ -69,8 +69,10 @@ jobs:
       - name: Package dist folder (macOS)
         if: runner.os == 'macOS'
         run: |
-          tar czf dist/tapas_${{ needs.prep.outputs.version }}-macos.tar.gz \
-            -C dist tapas_${{ needs.prep.outputs.version }}
+          ARCH=$(uname -m)   # arm64 or x86_64
+          tar czf "dist/tapas_${{ needs.prep.outputs.version }}-macos-${ARCH}.tar.gz" \
+              -C dist "tapas_${{ needs.prep.outputs.version }}.app"
+
 
       - name: Upload Build artifact
         uses: actions/upload-artifact@v4
