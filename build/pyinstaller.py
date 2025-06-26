@@ -152,7 +152,10 @@ if icon_file and icon_file.exists():
 if not sys.platform.startswith('win'):
     pyinstaller_args.append('--strip')
 if sys.platform == 'darwin':
-    pyinstaller_args += ["--target-arch", platform.machine()] 
+    pyinstaller_args += [
+        "--windowed",
+        "--target-arch", platform.machine()
+    ]
 
 
 PyInstaller.__main__.run(pyinstaller_args)
