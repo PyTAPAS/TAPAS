@@ -10,3 +10,7 @@ Using TAPAS
    import
    preprocessing
    combine_projects
+   visualization
+   component
+   local_fit
+   global_fit
