@@ -1,7 +1,7 @@
 Concept
 =======
 
-*TAPAS* (Transient Absorption Processing and Analysis Software) is implemented entirely in **Python** with a **PyQt** front-end, providing a native look-and-feel on every major platform. Pre-built application bundles are distributed for Windows, macOS and Linux; users can launch the graphical interface immediately. No Python interpreter, package manager or command-line setup is required.  Despite this convenience, the bundled directory keeps all source files readable.  Advanced users may open a module, modify a kinetic model or plotting routine, and simply restart the programme to apply their changes.  A detailed map of the code base showing where each layer (data I/O, preprocessing, fitting, visualisation) resides and what responsibility it carries—is given later in the :ref:`software-architecture` section.
+*TAPAS* (Transient Absorption Processing and Analysis Software) is implemented entirely in **Python** with a **PyQt** front-end, providing a native look-and-feel on every major platform. Pre-built application bundles are distributed for Windows, macOS and Linux; users can launch the graphical interface immediately. No Python interpreter, package manager or command-line setup is required.  Despite this convenience, the bundled directory keeps all source files readable.  Advanced users may open a module, modify a kinetic model or plotting routine, and simply restart the programme to apply their changes.  A detailed map of the code base showing where each layer (data I/O, preprocessing, fitting, visualisation) resides and what responsibility it carries—is given later in the :ref:`software_architecture` section.
 
 User-interface overview
 -----------------------
