@@ -1,3 +1,5 @@
+.. _using-tapas:
+
 Using TAPAS
 ===========
 
