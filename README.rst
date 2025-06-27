@@ -29,6 +29,9 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.15747625.svg
+   :target: https://doi.org/10.5281/zenodo.15747625
+   :alt: DOI – 10.5281/zenodo.15747625
 
 .. image:: https://img.shields.io/github/v/release/PyTAPAS/TAPAS?label=Latest%20Release
    :target: https://github.com/PyTAPAS/TAPAS/releases/latest
