@@ -6,5 +6,9 @@ Getting Started
 
    installation
    concept
-   project_structure
    software_architecture
+   project_structure
+
+
+In this chapter, we provide generall information about the front- and backend structure of the TAPAS framework. 
+   
