@@ -15,6 +15,6 @@ Each TAPAS project is serialized into a single HDF5 container with a clear hiera
 .. figure:: ../_static//HDF_screenshot.png
    :alt: HDF Procet structure
    :align: center
-   :figwidth: 80%
+   :figwidth: 100%
 
    An exemplary TAPAS project file viewed with HDFView.
