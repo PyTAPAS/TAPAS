@@ -9,3 +9,4 @@ Using TAPAS
    main_window
    import
    preprocessing
+   combine_projects
