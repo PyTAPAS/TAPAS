@@ -5,11 +5,11 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
 
 
 
-- **Dataset**
+- **Dataset Widget**
 
   select the dataset to which the processing should be applied. 
 
-- **Views**
+- **Views Widget**
 
   - ``Full View``
 
@@ -27,16 +27,16 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
 
     Additionally, the displayed view can be adjusted by the arrow and magnifying glass tools above the canvas.
 
-- **View Manipulations**
+- **View Manipulations Widget**
 
   Set a delay-time (eg. 2ps, 2e-12, 2µs) where the delay-time axis should switch from a linear to a logarithmic time-scale.
 
 
-- **Trim Data**
+- **Trim Data Widget**
 
   set a wavelength or delay-time interval. If no value is provided, the minimum/maximum value of the dataset is used. The Canvas will be updated immediately. Pressing ``Apply`` will save the new interval to the selected dataset. 
 
-- **Resampling**
+- **Resampling Widget**
 
   - ``Resample``: 
 
@@ -78,7 +78,7 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
       see `scipy.interpolate.make_interp_spline <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.make_interp_spline.html>`_ for further information on the ``linear``, ``quadratic`` and ``cubic`` interpolation method, `scipy.interpolate.pchip_interpolate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.pchip_interpolate.html>`_ for ``pchip`` interpolation  and `scipy.interpolate.Akima1DInterpolator <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Akima1DInterpolator.html>`_ for ``akima`` and ``makima`` interpolation.
 
 
-- **Chirp Correction**
+- **Chirp Correction Widget**
 
   - ``Autocorrect``: 
 
@@ -104,7 +104,7 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
 
     Apply the fitted chirp line to the dataset via interpolation. 
 
-- **Background Correction**
+- **Background Correction Widget**
 
   - ``Subtract Area``:
 
@@ -130,13 +130,13 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
 
     Subtract the solvent data imported in the ``Import`` tab. Only valid, if both datasets have the same dimensions. 
 
-- **Time Zero Correction**
+- **Time Zero Correction Widget**
 
   - ``Time-Point``:
 
     Delay time vector will be shifted so that ``Time-Point`` equals zero. 
 
-- **Averaging and Filtering**
+- **Averaging and Filtering Widget**
 
   - ``Savitzky-Golay``:
 
