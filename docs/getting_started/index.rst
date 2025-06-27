@@ -1,6 +1,10 @@
 Getting Started
 ===============
 
+
+In this chapter, we provide generall information about the front- and backend structure of the TAPAS framework. 
+
+
 .. toctree::
    :maxdepth: 1
 
@@ -10,5 +14,4 @@ Getting Started
    project_structure
 
 
-In this chapter, we provide generall information about the front- and backend structure of the TAPAS framework. 
    
