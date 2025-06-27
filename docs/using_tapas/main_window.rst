@@ -13,6 +13,10 @@ TAPAS employs a tab-based interface in which each tab is dedicated to a distinct
 
     Config files hold the states of the widgets, eg. defalut values for buttons. Upon software start, the defalut configurations are loaded under ``\_internal\tapas\configurations\default_gui_config.json``. When a project is saved, the current widget states are also saved to the HDF file. 
 
+  - ``Plotting Configurations``
+
+    select a preset ``matplotlibrc`` template, select the default ``matplotlibrc`` file which can be changed under ``\_internal\tapas\configurations\default_style.mplstyle`` or create and load your own configuration file. Guidence can be found in the Matplotlib `documentation <https://matplotlib.org/stable/users/explain/customizing.html>`_
+
   - ``Help → online Documentation`` 
 
     Link to the Read the Docs documentation.
