@@ -26,7 +26,7 @@ The source code can be found under::
 
       _internal/tapas
 
-and can be changed or extended to satify user specific needs. More information can be found `here <https://tapas-docs.readthedocs.io/en/latest/>`_.
+and can be changed or extended to satify user specific needs. More information can be found :ref:`here <software_architecture>`.
 
 
 Install from PyPI
