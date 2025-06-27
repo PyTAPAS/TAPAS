@@ -53,4 +53,4 @@ The corresponding source code folder structure is shown below.
 If the user for example wants to change the import routine to automatically read in their metadata, they would need to adjust the corresponding functions in the import controller module. 
 If the user wants to add a different filtering method in the preprocessing step, they would add the corresoponding button in the preprocessing tabwidget module, connect the button to a function in the view module and set the function in the controller module. 
 
-The kinetic models used for local and global fitting can be found under :file:`/utils/model_functions.py`. A detailed instruction on how to add custom models can be found in the :ref:`tutorials section <tut_new_model:>`. 
+The kinetic models used for local and global fitting can be found under :file:`/utils/model_functions.py`. A detailed instruction on how to add custom models can be found in the :ref:`tutorials section <tut_new_model>`. 
