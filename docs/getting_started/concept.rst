@@ -14,7 +14,7 @@ The GUI is organised into **seven workflow tabs**, mirroring the standard TA ana
 4. **Visualization** – publication-ready spectra, kinetics, fit results and correlation matrices.  
 5. **Components** – singular-value plots, kinetic traces and residual maps.  
 6. **Local Fit** – parallel or sequential exponential models with statistical diagnostics at a given (averaged) wavelength.  
-7. **Global Fit** – parallel, sequential or target model with statistical diagnostics over the full 
+7. **Global Fit** – parallel, sequential or target model with statistical diagnostics over the full ΔA matrix
 
 
 A tab-by-tab walk-through of every control, option and dialogue box appears in the :ref:`using-tapas` section.
