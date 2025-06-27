@@ -38,17 +38,26 @@ The **Preprocessing** tab presents an interactive 2D view of the transient-absor
 
 - **Resampling**
 
-  - ``Resample``
+  - ``Resample``: Down or upsampe the data grid. 
 
-    Down or upsampe the data grid. 
-    Set the intervall where the resampling should be applied. 
+    - Set the intervall where the resampling should be applied. 
 
-    ``Factor``: the sampling factor (eg. 0.1 means downsampling to 10% of datapoints, 3 means subsamling to 3 times the datapoints). 
+    - ``Factor``: the sampling factor (eg. 0.1 means downsampling to 10% of datapoints, 3 means subsamling to 3 times the datapoints). 
 
-    ``Axis``: the axis (wavelength or delay time) over which the sampling will be applied
+    - ``Axis``: the axis (wavelength or delay time) over which the sampling will be applied
 
-    ``Method``: interpolation method 
-    see `scipy.interpolate.make_interp_spline <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.make_interp_spline.html>`_ for further information on the ``linear``, ``quadratic`` and ``cubic`` interpolation method, `scipy.interpolate.pchip_interpolate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.pchip_interpolate.html>`_ for ``pchip`` interpolation  and `scipy.interpolate.Akima1DInterpolator <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Akima1DInterpolator.html>`_ for ``akima`` and ``makima`` interpolation.
+    - ``Method``: interpolation method 
+      see `scipy.interpolate.make_interp_spline <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.make_interp_spline.html>`_ for further information on the ``linear``, ``quadratic`` and ``cubic`` interpolation method, `scipy.interpolate.pchip_interpolate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.pchip_interpolate.html>`_ for ``pchip`` interpolation  and `scipy.interpolate.Akima1DInterpolator <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Akima1DInterpolator.html>`_ for ``akima`` and ``makima`` interpolation.
+
+
+  - ``Regularize``: Regularize the grid with equally spaced data points. 
+
+    - ``Datapoints``: Number of datapoints of the regularized grid
+
+    - ``Axis``: the axis (wavelength or delay time) over which the sampling will be applied. 
+
+    - ``Method``: interpolation method 
+      see `scipy.interpolate.make_interp_spline <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.make_interp_spline.html>`_ for further information on the ``linear``, ``quadratic`` and ``cubic`` interpolation method, `scipy.interpolate.pchip_interpolate <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.pchip_interpolate.html>`_ for ``pchip`` interpolation  and `scipy.interpolate.Akima1DInterpolator <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Akima1DInterpolator.html>`_ for ``akima`` and ``makima`` interpolation.
 
 
 
