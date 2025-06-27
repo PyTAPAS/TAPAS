@@ -1,3 +1,5 @@
+.. _using-tapas:
+
 Using TAPAS
 ===========
 
@@ -7,3 +9,8 @@ Using TAPAS
    main_window
    import
    preprocessing
+   combine_projects
+   visualization
+   component
+   local_fit
+   global_fit
