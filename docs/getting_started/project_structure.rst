@@ -10,3 +10,11 @@ TAPAS HDF5 Structure
 --------------------
 
 Each TAPAS project is serialized into a single HDF5 container with a clear hierarchical layout. Imported TA, solvent and steady-state measurements are stored under ``/raw Data/`` and annotated with experiment-level metadata (sample name, excitation wavelength, acquisition parameters etc.) entered in the Import tab. Preprocessing creates new groups under ``/ds/``. Each dataset references its source raw data and carries attributes recording the sequence of operations (time-zero correction, chirp compensation, trimming, etc.) without modifying the original arrays. Local and global fit results are saved under ``/local fit/`` or ``/global fit/``, respectively, with each fit group pointing to its associated processed dataset. Finally, Bayesian posterior samples from MCMC analysis are stored in ``/emcee/`` subgroups, linked to their parent fit, enabling traceability of every computation step.
+
+
+.. figure:: ../_static//HDF_screenshot.tif
+   :alt: HDF Procet structure
+   :align: center
+   :figwidth: 80%
+
+   An exemplary TAPAS project file viewed with HDFView.
