@@ -69,14 +69,49 @@ Figures export to vector formats (PDF, SVG) or raster images (JPG, PNG, TIFF), a
 
   - ``Add rcParam``
   
-      add a matplotlib rcParam key and value pair to temporarily overwrite the current rcParams style sheet. In the toolbar, a new or custom rcParams style sheet can be loaded in (see :ref:`main-window` for mor information). More infomrations on the various rcParams can be found in the matplotlib  `user guide <https://matplotlib.org/stable/users/explain/customizing.html>`_ 
+    add a matplotlib rcParam key and value pair to temporarily overwrite the current rcParams style sheet. In the toolbar, a new or custom rcParams style sheet can be loaded in (see :ref:`main-window` for mor information). More infomrations on the various rcParams can be found in the matplotlib  `user guide <https://matplotlib.org/stable/users/explain/customizing.html>`_.
 
-  - ``DeltaA Plot``
+  - ``Figure Size``
 
-    Plot spectral slices at selected delay times
+    Set the figure dimensions: first entry width, second entry height. Accepted units are inch ("), mm or cm. 
 
-  - ``Kin Trace``
+  - ``Show Real Size?``
 
-    Plot kinetic slices at selected wavelengths 
+    If checked, the figure canvas will be adjusted to match the actual real-world figure dimensions.  
 
+  - ``Figure Font``
+
+    Select one preinstalled font on your local machine
+
+  - ``Font Style``
+
+    Select one available font style of the selected and installed font family
+
+  - ``Label Size``
+
+    Set the size of all axes labels, legends, and titles in point. 
+
+  - ``Tick Size``
+
+    Set the size of all tick labels in point.
+
+  - ``Format``
+
+    Select a vector graphic or rastergraphic format. If a rastergraphic (e.g. png, jpg, tiff) is selected, the DPI value can be set subsequently. If a vector graphics format is selected, the text information can be saved as text or as Path. Rendering as text gives the opportunity to change the text with a suitable vector graphics editing program like Inkscape. However, different image displaying programs might change the font style and family slightly if the font is not available on the target device. Saving as path burrys the text information as object information, so no text editing is possible afterwards. However, the text will always be displayed as expected and no preinstalled font is necessary at the target device. 
+
+  - ``Result Dir``
+
+    Set the path, where the figure will be saved to. If none is set, the project path will be used or a file dialog will open up. 
+
+  - ``Save``
+
+    Save the figure with the current settings to the current directory. Depending on the metadata, filenames and subfolders will be automatically created. 
+
+  - ``Save as..``
+
+    Opens a file dialog where the user can select a directory to which the figure will be saved to. 
+
+  - ``export data``
+
+    In the figure canvas, ``export data`` saves the data to produce the current figure to CSV using the results directory set in the ``Figure Style Widget``. 
 
