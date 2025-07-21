@@ -1,3 +1,5 @@
+.. _main-window:
+
 Main Window
 ===========
 
