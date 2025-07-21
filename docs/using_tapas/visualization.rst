@@ -9,12 +9,54 @@ Figures export to vector formats (PDF, SVG) or raster images (JPG, PNG, TIFF), a
 
   select the dataset to which the processing should be applied. 
 
-- **Views Widget**
+- **Plot Widget**
 
-  - ``Full View``
+  - ``2D Plot``
 
-    Plots the full range of the dataset
+    Plot the 2D hypersphere of the dataset
 
-  - ``Time Zero View``
+  - ``DeltaA Plot``
 
-    Plots the temporal range close to zero. Good for inspection of the chirp.
+    Plot spectral slices at selected delay times
+
+  - ``Kin Trace``
+
+    Plot kinetic slices at selected wavelengths 
+
+  - ``Local Fit``
+
+    - ``Kin Trace``
+
+      Plot fit results at selected local fit wavelength 
+
+    - ``Posterior Dist``
+
+      Plot the corner representation of the results of the MCMC parameter posterior analysis
+
+  - ``Global Fit``
+
+    - ``2D Plot``
+
+      Plot the 2D hypersphere of the fitted data or the residuals of a selected global fit
+
+    - ``EAS/DAS/SAS``
+
+      Plot the Evolution-associated, decay-associated or species-associated spectra of a selected global fit
+
+    - ``Concentration``
+
+      Plot the time-dependendt evolution of the concentration of each component of a selected global fit
+
+    - ``DeltaA Plot``
+  
+      Plot spectral slices at selected delay times of a selected global fit
+
+  
+    - ``Kin Trace``
+  
+      Plot kinetic slices at selected wavelengths of a selected global fit
+
+    - ``Posterior Dist``
+
+      Plot the corner representation of the results of the MCMC parameter posterior analysis
+
