@@ -11,6 +11,9 @@ Figures export to vector formats (PDF, SVG) or raster images (JPG, PNG, TIFF), a
 
 - **Plot Widget**
 
+  select the plot type. 
+
+
   - ``2D Plot``
 
     Plot the 2D hypersphere of the dataset
@@ -59,4 +62,21 @@ Figures export to vector formats (PDF, SVG) or raster images (JPG, PNG, TIFF), a
     - ``Posterior Dist``
 
       Plot the corner representation of the results of the MCMC parameter posterior analysis
+
+- **Figure Style Widget**
+
+  Figure styling widget, applied to every plot type and used for exporting
+
+  - ``Add rcParam``
+  
+      add a matplotlib rcParam key and value pair to temporarily overwrite the current rcParams style sheet. In the toolbar, a new or custom rcParams style sheet can be loaded in (see :ref:`main-window` for mor information). More infomrations on the various rcParams can be found in the matplotlib  `user guide <https://matplotlib.org/stable/users/explain/customizing.html>`_ 
+
+  - ``DeltaA Plot``
+
+    Plot spectral slices at selected delay times
+
+  - ``Kin Trace``
+
+    Plot kinetic slices at selected wavelengths 
+
 
