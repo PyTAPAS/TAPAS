@@ -293,7 +293,6 @@ class VisualizeController(QObject):
                     'first column: delay times (s), second column: delA fit (OD), '
                     'third column: delA exp (OD), '
                     'fourth onwards: concentration profiles (OD) (if more than one component)\n')
-
         n_cols = 0
         for ukey in selected_ukeys:
             info = fit_dict[ukey]
