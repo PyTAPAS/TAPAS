@@ -337,11 +337,14 @@ class GlobalFitTab(QWidget):
         if results_path is None:
             self.global_fit_controller.call_statusbar("error", msg.Error.e17)
             return
-        meta_data = self.global_fit_controller.get_fitting_meta(
-            self.fit_results)
-        basic_results = self.global_fit_controller.get_fitting_print(
-            self.fit_results)
-
+        try:
+            meta_data = self.global_fit_controller.get_fitting_meta(
+                self.fit_results)
+            basic_results = self.global_fit_controller.get_fitting_print(
+                self.fit_results)
+        except KeyError:
+            self.global_fit_controller.call_statusbar("error", msg.Error.e50)
+            return
         emcee_results = ''
         if self.emcee_final_result:
             if 'output' in self.emcee_final_result:
