@@ -351,7 +351,7 @@ class GlobalFitTab(QWidget):
                 emcee_results += self.emcee_final_result['output']
                 emcee_results += f"\nburn: {self.emcee_final_result['meta']['burn']}, thin: {self.emcee_final_result['meta']['thin']}"
 
-        with open(results_path, "w") as file:
+        with open(results_path, "w", encoding='utf-8') as file:
             file.write('global fit results:\n')
             file.write(meta_data)
             file.write('\n-----------------------------------------------------\n')
@@ -1032,3 +1032,4 @@ class GlobalFitTab(QWidget):
             self.tw_canvas.w_canvas = QWidget(self.tw_canvas)
             self.tw_canvas.w_canvas.setLayout(layout)
             self.tw_canvas.view_layout.addWidget(self.tw_canvas.w_canvas)
+
