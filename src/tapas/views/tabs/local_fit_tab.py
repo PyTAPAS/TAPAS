@@ -309,18 +309,22 @@ class LocalFitTab(QWidget):
         if results_path is None:
             self.local_fit_controller.call_statusbar("error", msg.Error.e17)
             return
-        meta_data = self.local_fit_controller.get_fitting_meta(
-            self.fit_results)
-        basic_results = self.local_fit_controller.get_fitting_print(
-            self.fit_results)
-        wavelength = utils.Converter.convert_str_input2float(str(self.fit_results['wavelength']))
+        try:
+            meta_data = self.local_fit_controller.get_fitting_meta(
+                self.fit_results)
+            basic_results = self.local_fit_controller.get_fitting_print(
+                self.fit_results)
+            wavelength = utils.Converter.convert_str_input2float(str(self.fit_results['wavelength']))
+        except KeyError:
+            self.local_fit_controller.call_statusbar("error", msg.Error.e50)
+            return
         emcee_results = ''
         if self.emcee_final_result:
             if 'output' in self.emcee_final_result:
                 emcee_results += self.emcee_final_result['output']
                 emcee_results += f"\nburn: {self.emcee_final_result['meta']['burn']}, thin: {self.emcee_final_result['meta']['thin']}"
 
-        with open(results_path, "w") as file:
+        with open(results_path, "w", encoding='utf-8') as file:
             file.write(f'local fit results: {wavelength}m\n')
             file.write(meta_data)
             file.write('\n-----------------------------------------------------\n')

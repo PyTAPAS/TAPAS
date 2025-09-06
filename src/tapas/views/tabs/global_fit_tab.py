@@ -337,18 +337,21 @@ class GlobalFitTab(QWidget):
         if results_path is None:
             self.global_fit_controller.call_statusbar("error", msg.Error.e17)
             return
-        meta_data = self.global_fit_controller.get_fitting_meta(
-            self.fit_results)
-        basic_results = self.global_fit_controller.get_fitting_print(
-            self.fit_results)
-
+        try:
+            meta_data = self.global_fit_controller.get_fitting_meta(
+                self.fit_results)
+            basic_results = self.global_fit_controller.get_fitting_print(
+                self.fit_results)
+        except KeyError:
+            self.global_fit_controller.call_statusbar("error", msg.Error.e50)
+            return
         emcee_results = ''
         if self.emcee_final_result:
             if 'output' in self.emcee_final_result:
                 emcee_results += self.emcee_final_result['output']
                 emcee_results += f"\nburn: {self.emcee_final_result['meta']['burn']}, thin: {self.emcee_final_result['meta']['thin']}"
 
-        with open(results_path, "w") as file:
+        with open(results_path, "w", encoding='utf-8') as file:
             file.write('global fit results:\n')
             file.write(meta_data)
             file.write('\n-----------------------------------------------------\n')
@@ -1029,3 +1032,4 @@ class GlobalFitTab(QWidget):
             self.tw_canvas.w_canvas = QWidget(self.tw_canvas)
             self.tw_canvas.w_canvas.setLayout(layout)
             self.tw_canvas.view_layout.addWidget(self.tw_canvas.w_canvas)
+

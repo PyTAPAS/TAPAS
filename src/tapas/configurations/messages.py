@@ -311,6 +311,7 @@ class Error:
     e47 = 'resample the data first'
     e48 = 'file needs to have the correct hdf format'
     e49 = "cannot extract number of components n. Custom model needs '_nk' signature"
+    e50 = "Press 'Save Fit to Dataset' first."
     
 
 class Labels:

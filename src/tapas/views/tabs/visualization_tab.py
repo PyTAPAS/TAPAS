@@ -573,7 +573,7 @@ class VisualizeTab(QWidget):
             self.visualize_controller.call_statusbar("error", msg.Error.e17)
             return
 
-        # -------- lcreate folder ------------------------------------------------------------------
+        # -------- create folder ------------------------------------------------------------------
         experiment, sample = self.visualize_controller.get_exp_names()
         if experiment != '':
             self.results_dir = self.results_dir.joinpath(
@@ -610,15 +610,17 @@ class VisualizeTab(QWidget):
                 results_dir=self.results_dir)
 
         elif self.tw_select_plot.rb_local_fit.isChecked():
-            checkboxes = self.tw_local_fit_properties[1].w_select_fit.check_fits  # list
-            checked_boxes = [cb.text() for cb in checkboxes if cb.isChecked()]
             if self.tw_select_plot.rb_local_fit.menuSelected() == 'kin_trace':
+                checkboxes = self.tw_local_fit_properties[0].w_select_fit.check_fits  # list
+                checked_boxes = [cb.text() for cb in checkboxes if cb.isChecked()]
                 metadata, data_array = self.visualize_controller.get_local_fit(
                     ds=self.ds, selected_ukeys=checked_boxes)
                 self.visualize_controller.save_data(
                     ds=self.ds, datatype='localFit', metadata=metadata, data_array=data_array,
                     results_dir=self.results_dir)
             elif self.tw_select_plot.rb_local_fit.menuSelected() == 'emcee':
+                checkboxes = self.tw_local_fit_properties[1].w_select_fit.check_fits  # list
+                checked_boxes = [cb.text() for cb in checkboxes if cb.isChecked()]
                 ukey = checked_boxes[0]
                 metadata, data_array = self.visualize_controller.get_emcee_flatchain(
                     ds=self.ds,  ukey=ukey, local=True)
