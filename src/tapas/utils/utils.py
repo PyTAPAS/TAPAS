@@ -553,10 +553,10 @@ class Converter:
     
     def components_colorlist(base_color : str, number : int) ->list[str]:
         variants = []
-        try:
-            color = mcolors.cnames[base_color]
-        except KeyError:
-            pass  # Assume color is already in hex or another valid format
+        if isinstance(base_color, str):
+            color = mcolors.cnames.get(base_color, base_color)
+        else:
+            color = base_color  
 
         rgb = mcolors.to_rgb(color)
         # Convert RGB to HLS (Hue, Lightness, Saturation)
