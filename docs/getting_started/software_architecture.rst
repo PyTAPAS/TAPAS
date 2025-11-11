@@ -11,7 +11,8 @@ We use a lightweight, MVC-inspired design: the View layer owns basic input handl
    :align: center
    :figwidth: 80%
 
-   An overview of our MVC architecture. The :green:`View (green)` concentrates and validates the user input and informs the :orange:`Controller (orange)`. The controller gets the data from the :gray:`Model (gray)` manipulates it and updates the model. Finally, the model emits a signal catched by the View which updates the GUI. 
+   An overview of our MVC architecture. The :green:`View (green)` concentrates and validates the user input and informs the :orange:`Controller (orange)`. The controller gets the data from the :gray:`Model (gray)` manipulates it and updates the model. Finally, the model emits a signal catched by the View which updates the GUI. Adapted from *TAPAS: Transient Absorption Processing & Analysis Software*, ChemRxiv preprint, **2025**, <https://doi.org/10.26434/chemrxiv-2025-4d7fh>`_, CC BY 4.0
+
 
 
 The corresponding source code folder structure is shown below. 
