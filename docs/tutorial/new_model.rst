@@ -3,7 +3,7 @@
 Add a custom kinetic model
 ==========================
 
-This example is taken from *TAPAS: Transient Absorption Processing & Analysis Software*, ChemRxiv preprint, **2025**, <https://doi.org/10.26434/chemrxiv-2025-4d7fh>`_, CC BY 4.0
+This example is taken from *TAPAS: Transient Absorption Processing & Analysis Software*, ChemRxiv preprint, **2025**, DOI: https://doi.org/10.26434/chemrxiv-2025-4d7fh, CC BY 4.0
 
 
 First, familiarize yourself with the backend architecture found :ref:`here <software_architecture>`.
