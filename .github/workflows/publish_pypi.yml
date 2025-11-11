@@ -2,10 +2,6 @@ name: Build & publish pytapas
 
 # Trigger whenever pyproject.toml changes on the main branch
 on:
-  push:
-    branches: [main]
-    paths:
-      - "pyproject.toml"
   workflow_dispatch:
 
 permissions:
