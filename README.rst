@@ -199,4 +199,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
+The TAPAS logo/icon is licensed under CC BY 4.0 (© [Philipp Frech, 2025]).
+Use of the logo to imply endorsement is not allowed.
+
 
