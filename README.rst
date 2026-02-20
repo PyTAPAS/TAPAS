@@ -29,6 +29,10 @@ TAPAS
    :target: https://github.com/PyTAPAS/TAPAS/commits/main
    :alt: Last Commit
 
+.. image:: https://img.shields.io/badge/DOI-10.1002%2Fcptc.202500236-blue.svg
+   :target: https://doi.org/10.1002/cptc.202500236
+   :alt: DOI – 10.1002/cptc.202500236
+
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.15747625.svg
    :target: https://doi.org/10.5281/zenodo.15747625
    :alt: DOI – 10.5281/zenodo.15747625
@@ -63,6 +67,8 @@ For power users, every binary ships with the raw Python source and configuration
 Built on Python with JAX (XLA + JIT), TAPAS performs global fitting in seconds and provides detailed fit statistics, such as standard deviations and parameter correlations. 
 It organizes raw inputs (including solvent and steady-state scans), processed results, and analyses into compact HDF5 files with automatically generated metadata for easy and comprehensible management.
 
+This software is free and open for everyone to use. If it supports work that leads to a publication, we kindly ask that you cite the original open-access paper: `https://doi.org/10.1002/cptc.202500236 <https://doi.org/10.1002/cptc.202500236>`_.
+
 **Key features:**  
 
 - **free and Open-Source** software
@@ -76,6 +82,12 @@ It organizes raw inputs (including solvent and steady-state scans), processed re
 - **Combine multiple projects** into unified workspaces
 - **HDF5 data bundles** with auto-generated metadata for easy management
 
+.. figure:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_RC4Qfsitv2.png
+   :alt: example1
+   :align: center
+   :width: 200px
+
+src/tapas/assets/tapas_1.1.5_RC4Qfsitv2.png
 
 Installation Guide
 ==================
