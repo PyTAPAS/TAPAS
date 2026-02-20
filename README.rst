@@ -112,7 +112,7 @@ This software is free and open for everyone to use. If it supports work that lea
      - 
      - 
 
-src/tapas/assets/tapas_1.1.5_RC4Qfsitv2.png
+
 
 Installation Guide
 ==================
