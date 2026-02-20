@@ -82,10 +82,35 @@ This software is free and open for everyone to use. If it supports work that lea
 - **Combine multiple projects** into unified workspaces
 - **HDF5 data bundles** with auto-generated metadata for easy management
 
-.. figure:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_RC4Qfsitv2.png
-   :alt: example1
+.. list-table::
+   :widths: 1 1 1
    :align: center
-   :width: 200px
+
+   * - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_import.png
+          :alt: import
+          :width: 300px
+     - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_preprocessing.png
+          :alt: preprocessing
+          :width: 300px
+     - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_combine.png
+          :alt: combine
+          :width: 300px
+
+   * - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_visualize.png
+          :alt: visualize
+          :width: 300px
+     - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_component.png
+          :alt: component
+          :width: 300px
+     - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_local.png
+          :alt: local
+          :width: 300px
+
+   * - .. image:: https://raw.githubusercontent.com/PyTAPAS/TAPAS/main/src/tapas/assets/tapas_1.1.5_global.png
+          :alt: global
+          :width: 300px
+     - 
+     - 
 
 src/tapas/assets/tapas_1.1.5_RC4Qfsitv2.png
 
